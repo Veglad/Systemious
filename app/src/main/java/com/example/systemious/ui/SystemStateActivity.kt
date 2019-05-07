@@ -1,8 +1,9 @@
 package com.example.systemious.ui
 
 import android.os.Bundle
-import android.support.design.widget.BottomNavigationView
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.systemious.R
 import kotlinx.android.synthetic.main.activity_system_state.*
 
 class SystemStateActivity : AppCompatActivity() {
