@@ -1,4 +1,4 @@
-package com.example.systemious
+package com.example.systemious.ui
 
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
