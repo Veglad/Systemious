@@ -1,8 +1,10 @@
 package com.example.systemious.ui
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
@@ -13,13 +15,20 @@ import kotlinx.android.synthetic.main.activity_system_state.*
 class SystemStateActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
+    private lateinit var viewModel: ActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_system_state)
 
+        viewModel = ViewModelProviders.of(this).get(ActivityViewModel::class.java)
+
         setSupportActionBar(mainToolbar)
         initNavigation()
+
+        viewModel.isSystemServiceWorking.observe(this, Observer<Boolean> { isInfoServiceWorking ->
+           Log.d("Activity", "Isworking: $isInfoServiceWorking")
+        })
     }
 
     private fun initNavigation() {
