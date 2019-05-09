@@ -3,17 +3,17 @@
 
     <item
             android:id="@+id/navigationSystemState"
-            android:icon="@drawable/ic_home_black_24dp"
+            android:icon="@drawable/ic_system_state_black_24dp"
             android:title="@string/system_state"/>
 
     <item
             android:id="@+id/navigationSystemDetails"
-            android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="@string/system_details"/>
+            android:icon="@drawable/ic_system_info_black_24dp"
+            android:title="@string/system_info"/>
 
     <item
             android:id="@+id/navigationFileManager"
-            android:icon="@drawable/ic_notifications_black_24dp"
+            android:icon="@drawable/ic_file_manager_black_24dp"
             android:title="@string/file_manager"/>
 
 </menu>
