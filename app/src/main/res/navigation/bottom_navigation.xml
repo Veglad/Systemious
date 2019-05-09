@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/bottom_navigation"
+            app:startDestination="@id/navigationSystemState">
+
+    <fragment android:id="@+id/navigationSystemState"
+              android:name="com.example.systemious.ui.system_state.SystemStateFragment"
+              android:label="system_state_fragment" tools:layout="@layout/system_state_fragment"/>
+    <fragment android:id="@+id/navigationSystemDetails" android:name="com.example.systemious.ui.system_details.SystemDetails"
+              android:label="system_details_fragment" tools:layout="@layout/system_details_fragment"/>
+    <fragment android:id="@+id/navigationFileManager" android:name="com.example.systemious.ui.file_manager.FileManager"
+              android:label="file_manager_fragment" tools:layout="@layout/file_manager_fragment"/>
+</navigation>
