@@ -6,8 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 
 import com.example.systemious.R
+import com.example.systemious.domain.RamInfo
+import kotlinx.android.synthetic.main.system_state_fragment.*
 
 class SystemStateFragment : Fragment() {
 
@@ -27,7 +30,9 @@ class SystemStateFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SystemStateViewModel::class.java)
-        // TODO: Use the ViewModel
+        viewModel.ramInfo.observe(this, Observer<RamInfo> { ramInfo ->
+            systemStateTextView.text = "Total: " + ramInfo.totalRam + "\nUsed: " + ramInfo.usedRam
+        })
     }
 
 }

@@ -1,7 +1,45 @@
 package com.example.systemious.ui.system_state
 
-import androidx.lifecycle.ViewModel;
+import android.app.Application
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
+import com.example.systemious.App
+import com.example.systemious.domain.RamInfo
+import com.example.systemious.ui.SystemInfoService
+import com.example.systemious.utils.Constants
 
-class SystemStateViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+class SystemStateViewModel(application: Application) : AndroidViewModel(application) {
+    private var _ramInfo = MutableLiveData<RamInfo>().apply { value = RamInfo() }
+    val ramInfo: MutableLiveData<RamInfo>
+        get() = _ramInfo
+
+    private val systemInfoBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            systemInfoMessageReceived(intent)
+        }
+    }
+
+    init {
+        registerSystemInfoBroadcastReceiver()
+    }
+
+    private fun registerSystemInfoBroadcastReceiver() {
+        val intentFilter = IntentFilter(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION)
+        getApplication<App>().registerReceiver(systemInfoBroadcastReceiver, intentFilter)
+    }
+
+    private fun systemInfoMessageReceived(intent: Intent?) {
+        intent?.extras?.let {bundle ->
+            _ramInfo.value = bundle.getParcelable(SystemInfoService.RAM_INFO_KEY)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        getApplication<App>().unregisterReceiver(systemInfoBroadcastReceiver)
+    }
 }
