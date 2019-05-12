@@ -80,13 +80,13 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
 
     override fun onCleared() {
         super.onCleared()
-        unBoundSystemService() // Also stops service
+        unBoundSystemService()
+        stopSystemService()
         Log.d("FOREGROUND", "onCleared")
     }
 
     private fun unBoundSystemService() {
         if (isBound) {
-            // Also stops service in onServiceDisconnected callback
             getApplication<App>().unbindService(systemServiceConnection)
             isBound = false
         }
@@ -96,5 +96,15 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
         getApplication<App>().startService(Intent(getApplication(), SystemInfoService::class.java).apply {
             action = SystemInfoService.ACTION_STOP_FOREGROUND_SERVICE
         })
+    }
+
+    fun toggleServiceState() {
+        if (_isSystemServiceWorking.value == true) {
+            unBoundSystemService()
+            stopSystemService()
+        } else {
+            startSystemService()
+            bindToSystemService()
+        }
     }
 }

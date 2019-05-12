@@ -49,10 +49,10 @@ class SystemInfoService : Service() {
     }
 
     private fun stopForegroundService() {
-        notifyServiceStopped()
         Log.d(TAG_FOREGROUND_SERVICE, "Foreground service is stopped.")
         stopForeground(true)
         stopSelf()
+        notifyServiceStopped()
     }
 
     private fun notifyServiceStopped() {
