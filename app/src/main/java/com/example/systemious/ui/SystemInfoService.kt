@@ -12,6 +12,8 @@ import androidx.core.app.NotificationCompat
 import com.example.systemious.R
 import com.example.systemious.utils.Constants
 import android.os.Handler
+import android.app.ActivityManager
+import com.example.systemious.domain.RamInfo
 
 
 class SystemInfoService : Service() {
@@ -23,12 +25,15 @@ class SystemInfoService : Service() {
         const val ACTION_SET_UPDATE_FREQUENCY = "ACTION_SET_UPDATE_FREQUENCY"
 
         const val FREQUENCY_UPDATE_MS_KEY = "FREQUENCY_UPDATE_MS_KEY"
+        val PROCESS_BUILDER_PARAMS_CPU_FREQ_MIN = arrayOf(Constants.COMMAND_CAT_PATH, Constants.CPU_FREQUENCY_MIN)
+        val PROCESS_BUILDER_PARAMS_CPU_FREQ_MAX = arrayOf(Constants.COMMAND_CAT_PATH, Constants.CPU_FREQUENCY_MAX)
+        val PROCESS_BUILDER_PARAMS_CPU_FREQ_CURRENT = arrayOf(Constants.COMMAND_CAT_PATH, Constants.CPU_INFO_PATH)
+
+        const val RAM_INFO_KEY = "com.example.systemious.ui.RAM_INFO_KEY"
     }
 
     private val mBinder = LocalBinder()
-
     private val trackingHandler = Handler()
-
     var infoUpdateFrequencyMs = 1000L
     private set
 
@@ -105,14 +110,26 @@ class SystemInfoService : Service() {
     private fun startComponentsStateTracking() {
         val runnableCode = object : Runnable {
             override fun run() {
-                //TODO 1: Get components state info
-                //TODO 2: Send Broadcast with components state info
-                Log.d("FOREGROUND", "handler looped")
+                val intentWithTrackedData = getIntentWithTrackedData()
+                sendBroadcast(intentWithTrackedData)
 
                 trackingHandler.postDelayed(this, infoUpdateFrequencyMs)
             }
         }
         trackingHandler.post(runnableCode)
+    }
+
+    //TODO: Add cpu frequency and network
+    private fun getIntentWithTrackedData(): Intent? {
+        val memoryInfo = ActivityManager.MemoryInfo()
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        activityManager.getMemoryInfo(memoryInfo)
+
+        val ramInfo = RamInfo(memoryInfo.totalMem - memoryInfo.availMem, memoryInfo.totalMem)
+
+        return Intent(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION).apply {
+            putExtra(RAM_INFO_KEY, ramInfo)
+        }
     }
 
     private fun notifyServiceStarted() {

@@ -82,6 +82,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
         super.onCleared()
         unBoundSystemService()
         stopSystemService()
+        getApplication<App>().unregisterReceiver(systemInfoBroadcastReceiver)
         Log.d("FOREGROUND", "onCleared")
     }
 
