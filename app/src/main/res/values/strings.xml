@@ -7,4 +7,5 @@
     <string name="system_info_notification_title">Tracking components usage</string>
     <string name="system_info_notification_description">Tracking CPU, GPU, RAM usage</string>
     <string name="system_info_notification_action_stop">Stop</string>
+    <string name="tracker_toggle">Tracker toggle</string>
 </resources>
