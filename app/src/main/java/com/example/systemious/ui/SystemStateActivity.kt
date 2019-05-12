@@ -7,6 +7,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.systemious.R
@@ -35,6 +36,20 @@ class SystemStateActivity : AppCompatActivity() {
         navController = Navigation.findNavController(this, R.id.mainFragment)
         bottomNavigation.setupWithNavController(navController)
         NavigationUI.setupActionBarWithNavController(this, navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when(destination.id) {
+                R.id.navigationSystemState -> {
+                    supportActionBar?.title = getString(R.string.system_state)
+                }
+                R.id.navigationSystemDetails -> {
+                    supportActionBar?.title = getString(R.string.system_info)
+                }
+                R.id.navigationFileManager-> {
+                    supportActionBar?.title = getString(R.string.file_manager)
+                }
+            }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
