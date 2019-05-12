@@ -11,6 +11,8 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.systemious.R
 import com.example.systemious.utils.Constants
+import android.os.Handler
+
 
 class SystemInfoService : Service() {
 
@@ -25,7 +27,9 @@ class SystemInfoService : Service() {
 
     private val mBinder = LocalBinder()
 
-    var infoUpdateFrequencyMs = 1000
+    private val trackingHandler = Handler()
+
+    var infoUpdateFrequencyMs = 1000L
     private set
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -34,8 +38,8 @@ class SystemInfoService : Service() {
 
             when (action) {
                 ACTION_SET_UPDATE_FREQUENCY -> {
-                    val tempInfoUpdateFrequencyMs = intent.extras?.getInt(FREQUENCY_UPDATE_MS_KEY) ?: infoUpdateFrequencyMs
-                    if (tempInfoUpdateFrequencyMs > 100) {
+                    val tempInfoUpdateFrequencyMs = intent.extras?.getLong(FREQUENCY_UPDATE_MS_KEY) ?: infoUpdateFrequencyMs
+                    if (tempInfoUpdateFrequencyMs > 100L) {
                         infoUpdateFrequencyMs = tempInfoUpdateFrequencyMs
                     }
                 }
@@ -50,6 +54,7 @@ class SystemInfoService : Service() {
 
     private fun stopForegroundService() {
         Log.d(TAG_FOREGROUND_SERVICE, "Foreground service is stopped.")
+        trackingHandler.removeCallbacksAndMessages(null)
         stopForeground(true)
         stopSelf()
         notifyServiceStopped()
@@ -65,7 +70,7 @@ class SystemInfoService : Service() {
     }
 
     private fun startForegroundService() {
-        Log.d(TAG_FOREGROUND_SERVICE, "Foreground service is started.")
+
 
         val notificationIntent = Intent(application, SystemStateActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -91,8 +96,23 @@ class SystemInfoService : Service() {
                 pStopIntent
             ).build()
 
-        notifyServiceStarted()
         startForeground(Constants.SERVICE_INFO_NOTIFICATION_ID, notification)
+        notifyServiceStarted()
+        Log.d(TAG_FOREGROUND_SERVICE, "Foreground service is started.")
+        startComponentsStateTracking()
+    }
+
+    private fun startComponentsStateTracking() {
+        val runnableCode = object : Runnable {
+            override fun run() {
+                //TODO 1: Get components state info
+                //TODO 2: Send Broadcast with components state info
+                Log.d("FOREGROUND", "handler looped")
+
+                trackingHandler.postDelayed(this, infoUpdateFrequencyMs)
+            }
+        }
+        trackingHandler.post(runnableCode)
     }
 
     private fun notifyServiceStarted() {
