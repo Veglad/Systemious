@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.systemious.App
+import com.example.systemious.data.Repository
 import com.example.systemious.domain.RamInfo
 import com.example.systemious.ui.SystemInfoService
 import com.example.systemious.utils.Constants
@@ -16,6 +17,26 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     private var _ramInfo = MutableLiveData<RamInfo>().apply { value = RamInfo() }
     val ramInfo: MutableLiveData<RamInfo>
         get() = _ramInfo
+
+    private var _coresNumber = MutableLiveData<Int>()
+        .apply { value = Repository.getCpuCoresNumber() }
+    val coresNumber: MutableLiveData<Int>
+        get() = _coresNumber
+
+    private var _currFrequencies = MutableLiveData<IntArray>()
+        .apply { value = Repository.getCoresMinFrequencies() }
+    val currFrequencies: MutableLiveData<IntArray>
+        get() = _currFrequencies
+
+    private var _maxFrequencies = MutableLiveData<IntArray>()
+        .apply { value = Repository.getCoresMaxFrequencies() }
+    val maxFrequencies: MutableLiveData<IntArray>
+        get() = _maxFrequencies
+
+    private var _minFrequencies = MutableLiveData<IntArray>()
+        .apply { value = Repository.getCoresMinFrequencies() }
+    val minFrequencies: MutableLiveData<IntArray>
+        get() = _minFrequencies
 
     private val systemInfoBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -35,6 +56,7 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     private fun systemInfoMessageReceived(intent: Intent?) {
         intent?.extras?.let {bundle ->
             _ramInfo.value = bundle.getParcelable(SystemInfoService.RAM_INFO_KEY)
+            _currFrequencies.value = bundle.getIntArray(SystemInfoService.CPU_CURRENT_FREQUENCIES_KEY)
         }
     }
 
