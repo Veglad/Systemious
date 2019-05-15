@@ -13,6 +13,7 @@ import com.example.systemious.R
 import com.example.systemious.utils.Constants
 import android.os.Handler
 import android.app.ActivityManager
+import com.example.systemious.data.SystemInfoManager
 import com.example.systemious.domain.RamInfo
 
 
@@ -30,12 +31,20 @@ class SystemInfoService : Service() {
         val PROCESS_BUILDER_PARAMS_CPU_FREQ_CURRENT = arrayOf(Constants.COMMAND_CAT_PATH, Constants.CPU_INFO_PATH)
 
         const val RAM_INFO_KEY = "com.example.systemious.ui.RAM_INFO_KEY"
+        const val CPU_CURRENT_FREQUENCIES_KEY = "com.example.systemious.ui.CPU_CURRENT_FREQUENCIES_KEY"
     }
 
     private val mBinder = LocalBinder()
     private val trackingHandler = Handler()
     var infoUpdateFrequencyMs = 1000L
     private set
+
+    var cpuCoresNumber = SystemInfoManager.coresNumber
+    private set
+    var cpuMaxFrequencies = SystemInfoManager.maxCoresFrequencies
+        private set
+    var cpuMinFrequencies = SystemInfoManager.minCoresFrequencies
+        private set
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -121,15 +130,24 @@ class SystemInfoService : Service() {
 
     //TODO: Add cpu frequency and network
     private fun getIntentWithTrackedData(): Intent? {
+
+
+        val currentCoresFrequencies = SystemInfoManager.currentCoresFrequencies
+        val ramInfo = getRamInfo()
+
+        return Intent(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION).apply {
+            putExtra(RAM_INFO_KEY, ramInfo)
+            putExtra(CPU_CURRENT_FREQUENCIES_KEY, currentCoresFrequencies)
+        }
+    }
+
+    private fun getRamInfo(): RamInfo {
         val memoryInfo = ActivityManager.MemoryInfo()
         val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         activityManager.getMemoryInfo(memoryInfo)
 
         val ramInfo = RamInfo(memoryInfo.totalMem - memoryInfo.availMem, memoryInfo.totalMem)
-
-        return Intent(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION).apply {
-            putExtra(RAM_INFO_KEY, ramInfo)
-        }
+        return ramInfo
     }
 
     private fun notifyServiceStarted() {
