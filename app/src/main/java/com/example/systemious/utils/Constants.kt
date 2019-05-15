@@ -18,4 +18,8 @@ object Constants{
     const val CPU_FREQUENCY_MAX = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq"
     const val CPU_FREQUENCY_CURRENT = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"
 
+
+    //Cpu info collector
+    const val READ_BUFFER_SIZE = 1024
+
 }
