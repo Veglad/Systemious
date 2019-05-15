@@ -5,11 +5,19 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.example.systemious.utils.Constants
+import timber.log.Timber
 
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
         createSystemInfoNotificationChannel()
+        initTimber()
+    }
+
+    private fun initTimber() {
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
     }
 
     private fun createSystemInfoNotificationChannel() {
