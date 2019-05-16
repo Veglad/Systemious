@@ -13,4 +13,6 @@ object SystemInfoManager {
     }
 
     val currentCoresFrequencies = CpuInfoCollector.takeCurrentCoresFrequencies()
+
+    val cpuUsageSnapshot = CpuInfoCollector.takeCpuUsageSnapshot()
 }

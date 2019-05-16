@@ -31,7 +31,7 @@ class SystemInfoService : Service() {
         val PROCESS_BUILDER_PARAMS_CPU_FREQ_CURRENT = arrayOf(Constants.COMMAND_CAT_PATH, Constants.CPU_INFO_PATH)
 
         const val RAM_INFO_KEY = "com.example.systemious.ui.RAM_INFO_KEY"
-        const val CPU_CURRENT_FREQUENCIES_KEY = "com.example.systemious.ui.CPU_CURRENT_FREQUENCIES_KEY"
+        const val CPU_CURRENT_USAGE_KEY = "com.example.systemious.ui.CPU_CURRENT_USAGE_KEY"
     }
 
     private val mBinder = LocalBinder()
@@ -132,12 +132,12 @@ class SystemInfoService : Service() {
     private fun getIntentWithTrackedData(): Intent? {
 
 
-        val currentCoresFrequencies = SystemInfoManager.currentCoresFrequencies
+        val currentCoresFrequencies = SystemInfoManager.cpuUsageSnapshot
         val ramInfo = getRamInfo()
 
         return Intent(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION).apply {
             putExtra(RAM_INFO_KEY, ramInfo)
-            putExtra(CPU_CURRENT_FREQUENCIES_KEY, currentCoresFrequencies)
+            putExtra(CPU_CURRENT_USAGE_KEY, currentCoresFrequencies)
         }
     }
 

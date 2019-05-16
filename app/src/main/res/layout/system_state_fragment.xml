@@ -17,18 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="system state"/>
+
     <TextView
-            android:id="@+id/maxFreqTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="system state"/>
-    <TextView
-            android:id="@+id/minFreqTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="system state"/>
-    <TextView
-            android:id="@+id/currFreqTextView"
+            android:id="@+id/currUsageTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="system state"/>

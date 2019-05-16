@@ -144,17 +144,16 @@ object CpuInfoCollector {
     /**
      * /proc/stat Get CPU value of each core from
      *
-     * @return List of CPU values for each core (0 elements at error)
+     * @return List of CPU usage (from 0 to 1)
      */
-    fun takeCpuUsageSnapshot(): ArrayList<OneCpuInfo>? {
+    fun takeCpuUsageSnapshot(): DoubleArray {
 
         // [0] is the whole, [1] and later are individual CPUs
-        val result = ArrayList<OneCpuInfo>()
+        val cpusUsageInPercent = mutableListOf<Double>()
 
         try {
-            BufferedReader(InputStreamReader(FileInputStream("/proc/stat")), Constants.READ_BUFFER_SIZE).use { it ->
+            BufferedReader(InputStreamReader(FileInputStream("/proc/stat")), Constants.READ_BUFFER_SIZE).use {
                 it.forEachLine { line ->
-
                     if (!line.startsWith("cpu")) {
                         return@forEachLine
                     }
@@ -168,22 +167,24 @@ object CpuInfoCollector {
 
                     val tokens = line.split(" +".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                     val oci = OneCpuInfo()
-                    oci.idle = java.lang.Long.parseLong(tokens[4])
-                    oci.total = (java.lang.Long.parseLong(tokens[1])
+                    val idle = java.lang.Long.parseLong(tokens[4])
+                    val total = (java.lang.Long.parseLong(tokens[1])
                             + java.lang.Long.parseLong(tokens[2])
                             + java.lang.Long.parseLong(tokens[3])
                             + oci.idle
                             + java.lang.Long.parseLong(tokens[5])
                             + java.lang.Long.parseLong(tokens[6])
                             + java.lang.Long.parseLong(tokens[7]))
-                    result.add(oci)
+
+                    val percentUsage = (total - idle).toDouble() / total
+                    cpusUsageInPercent.add(percentUsage)
                 }
             }
-            return result
+            return cpusUsageInPercent.toDoubleArray()
 
         } catch (ex: Exception) {
             Timber.e(ex)
-            return null
+            return DoubleArray(0)
         }
 
     }

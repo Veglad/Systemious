@@ -34,12 +34,10 @@ class SystemStateFragment : Fragment() {
             systemStateTextView.text = "Total: " + ramInfo.totalRam + "\nUsed: " + ramInfo.usedRam
         })
         viewModel.coresNumber.observe(this, Observer<Int> { cores : Int -> coresTextView.text = cores.toString()})
-        viewModel.minFrequencies.observe(this, Observer<IntArray> { minFreqs -> minFreqTextView.text =  printIntArray(minFreqs, "minFreqs") })
-        viewModel.maxFrequencies.observe(this, Observer<IntArray> { maxFreqs -> maxFreqTextView.text = printIntArray(maxFreqs, "maxFreqs") })
-        viewModel.currFrequencies.observe(this, Observer<IntArray> { curFreqs -> currFreqTextView.text = printIntArray(curFreqs, "curFreqs") })
+        viewModel.cpuUsages.observe(this, Observer<DoubleArray> { curFreqs -> currUsageTextView.text = printIntArray(curFreqs, "curFreqs") })
     }
 
-    private fun printIntArray(intArray: IntArray, description: String): String {
+    private fun printIntArray(intArray: DoubleArray, description: String): String {
         var text = ""
         for (i in 0 until intArray.size) {
             text += "[$i] $description - ${intArray[i]}\n"

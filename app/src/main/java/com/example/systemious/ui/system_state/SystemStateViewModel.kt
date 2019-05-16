@@ -23,20 +23,10 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     val coresNumber: MutableLiveData<Int>
         get() = _coresNumber
 
-    private var _currFrequencies = MutableLiveData<IntArray>()
-        .apply { value = Repository.getCoresMinFrequencies() }
-    val currFrequencies: MutableLiveData<IntArray>
-        get() = _currFrequencies
-
-    private var _maxFrequencies = MutableLiveData<IntArray>()
-        .apply { value = Repository.getCoresMaxFrequencies() }
-    val maxFrequencies: MutableLiveData<IntArray>
-        get() = _maxFrequencies
-
-    private var _minFrequencies = MutableLiveData<IntArray>()
-        .apply { value = Repository.getCoresMinFrequencies() }
-    val minFrequencies: MutableLiveData<IntArray>
-        get() = _minFrequencies
+    private var _cpuUsages = MutableLiveData<DoubleArray>()
+        .apply { value = DoubleArray(0) }
+    val cpuUsages: MutableLiveData<DoubleArray>
+        get() = _cpuUsages
 
     private val systemInfoBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -56,7 +46,7 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     private fun systemInfoMessageReceived(intent: Intent?) {
         intent?.extras?.let {bundle ->
             _ramInfo.value = bundle.getParcelable(SystemInfoService.RAM_INFO_KEY)
-            _currFrequencies.value = bundle.getIntArray(SystemInfoService.CPU_CURRENT_FREQUENCIES_KEY)
+            _cpuUsages.value = bundle.getDoubleArray(SystemInfoService.CPU_CURRENT_USAGE_KEY)
         }
     }
 

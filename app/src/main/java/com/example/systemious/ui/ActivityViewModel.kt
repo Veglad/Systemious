@@ -34,8 +34,6 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
             systemService = binder.service
             isBound = true
             Repository.saveCpuCoresNumber(binder.service.cpuCoresNumber)
-            Repository.saveCoresMaxFrequencies(binder.service.cpuMaxFrequencies)
-            Repository.saveCoresMinFrequencies(binder.service.cpuMinFrequencies)
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
