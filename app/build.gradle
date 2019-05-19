@@ -39,6 +39,7 @@ dependencies {
     implementation "android.arch.navigation:navigation-ui-ktx:1.0.0"
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0-beta01'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0-alpha3'
