@@ -13,4 +13,5 @@
     <!--System info screen-->
     <string name="battery_level_format">%d%%</string>
     <string name="used_ram">Used RAM</string>
+    <string name="memory_line_data_set_title">RAM capacity in MB</string>
 </resources>

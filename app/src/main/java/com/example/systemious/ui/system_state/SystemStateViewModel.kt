@@ -19,10 +19,6 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
         private const val MAX_MEMORY_CHART_POINTS_NUMBER = 100
     }
 
-    private var _ramCapacity = MutableLiveData<Long>().apply { value = SystemInfoManager.getRamCapacity(getApplication()) }
-    val ramCapacity: MutableLiveData<Long>
-        get() = _ramCapacity
-
     private var _ramUsed = MutableLiveData<Queue<Long>>().apply { value = LinkedList<Long>() }
     val ramUsed: MutableLiveData<Queue<Long>>
         get() = _ramUsed

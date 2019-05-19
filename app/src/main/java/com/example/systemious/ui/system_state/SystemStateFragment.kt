@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.system_state_fragment.*
 import java.util.*
 import android.graphics.Color
 import androidx.core.content.ContextCompat
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineData
@@ -35,11 +36,10 @@ class SystemStateFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        initCharts()
 
         viewModel = ViewModelProviders.of(this).get(SystemStateViewModel::class.java)
         viewModel.ramUsed.observe(this, Observer<Queue<Long>> { usedRamValueQueue ->
-            drawChartLines(usedRamValueQueue)
+            drawChartLines(usedRamValueQueue, getString(R.string.memory_line_data_set_title), memoryChart)
         })
         viewModel.maxRamCapacity.observe(this,  Observer<Long> { maxRamCapacity ->
             this@SystemStateFragment.maxRamCapacity = maxRamCapacity.toFloat() })
@@ -51,7 +51,7 @@ class SystemStateFragment : Fragment() {
         })
     }
 
-    private fun drawChartLines(usedRamValueQueue: Queue<Long>) {
+    private fun drawChartLines(usedRamValueQueue: Queue<Long>, lineDataSetTitle: String, chart: LineChart) {
         val seriesData = ArrayList<Entry>()
 
         for ((i, ramValue) in usedRamValueQueue.withIndex()) {
@@ -59,28 +59,24 @@ class SystemStateFragment : Fragment() {
         }
 
         val lineDataSet: LineDataSet
-        if (memoryChart.data != null && memoryChart.data.dataSetCount > 0) {
-            lineDataSet = memoryChart.data.getDataSetByIndex(0) as LineDataSet
+        if (chart.data != null && chart.data.dataSetCount > 0) {
+            lineDataSet = chart.data.getDataSetByIndex(0) as LineDataSet
             lineDataSet.values = seriesData
-            memoryChart.data.notifyDataChanged()
-            memoryChart.notifyDataSetChanged()
+            chart.data.notifyDataChanged()
+            chart.notifyDataSetChanged()
         } else {
-            lineDataSet = LineDataSet(seriesData, "RAM capacity in MB")
+            lineDataSet = LineDataSet(seriesData, lineDataSetTitle)
             lineDataSet.setDrawIcons(false)
             lineDataSet.color = context?.let { ContextCompat.getColor(it, R.color.secondary_color) } ?: Color.DKGRAY
             lineDataSet.setCircleColor(Color.DKGRAY)
             lineDataSet.lineWidth = 1f
             lineDataSet.circleRadius = 2f
             lineDataSet.setDrawCircleHole(false)
-            memoryChart.description.isEnabled = false
+            chart.description.isEnabled = false
         }
 
         lineDataSet.setDrawValues(false)
-        memoryChart.data = LineData(lineDataSet)
-        memoryChart.invalidate()
-    }
-
-    private fun initCharts() {
-
+        chart.data = LineData(lineDataSet)
+        chart.invalidate()
     }
 }
