@@ -12,4 +12,5 @@
 
     <!--System info screen-->
     <string name="battery_level_format">%d%%</string>
+    <string name="used_ram">Used RAM</string>
 </resources>

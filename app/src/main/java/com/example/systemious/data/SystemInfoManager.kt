@@ -22,13 +22,20 @@ class SystemInfoManager {
 
         fun getCpuUsageSnapshot() = CpuInfoCollector.takeCpuUsageSnapshot()
 
-        fun getRamInfo(context: Context): RamInfo {
+        fun getRamUsedValue(context: Context): Long {
             val memoryInfo = ActivityManager.MemoryInfo()
             val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
             activityManager.getMemoryInfo(memoryInfo)
 
-            val ramInfo = RamInfo(memoryInfo.totalMem - memoryInfo.availMem, memoryInfo.totalMem)
-            return ramInfo
+            return memoryInfo.totalMem - memoryInfo.availMem
+        }
+
+        fun getRamCapacity(context: Context): Long {
+            val memoryInfo = ActivityManager.MemoryInfo()
+            val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+            activityManager.getMemoryInfo(memoryInfo)
+
+            return memoryInfo.totalMem
         }
     }
 }

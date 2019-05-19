@@ -134,7 +134,7 @@ class SystemInfoService : Service() {
 
 
         val currentCoresFrequencies = SystemInfoManager.getCpuUsageSnapshot()
-        val ramInfo = SystemInfoManager.getRamInfo(this)
+        val ramInfo = SystemInfoManager.getRamUsedValue(this)
 
         return Intent(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION).apply {
             putExtra(RAM_INFO_KEY, ramInfo)

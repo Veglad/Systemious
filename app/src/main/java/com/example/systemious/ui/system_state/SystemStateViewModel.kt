@@ -9,18 +9,31 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.systemious.App
 import com.example.systemious.data.SystemInfoManager
-import com.example.systemious.domain.RamInfo
 import com.example.systemious.ui.SystemInfoService
 import com.example.systemious.utils.Constants
+import java.util.*
 
 class SystemStateViewModel(application: Application) : AndroidViewModel(application) {
-    private var _ramInfo = MutableLiveData<RamInfo>().apply { value = RamInfo() }
-    val ramInfo: MutableLiveData<RamInfo>
-        get() = _ramInfo
+
+    companion object {
+        private const val MAX_MEMORY_CHART_POINTS_NUMBER = 100
+    }
+
+    private var _ramCapacity = MutableLiveData<Long>().apply { value = SystemInfoManager.getRamCapacity(getApplication()) }
+    val ramCapacity: MutableLiveData<Long>
+        get() = _ramCapacity
+
+    private var _ramUsed = MutableLiveData<Queue<Long>>().apply { value = LinkedList<Long>() }
+    val ramUsed: MutableLiveData<Queue<Long>>
+        get() = _ramUsed
 
     private var _coresNumber = MutableLiveData<Int>().apply { value = SystemInfoManager.coresNumber }
     val coresNumber: MutableLiveData<Int>
         get() = _coresNumber
+
+    private var _maxRamCapacity = MutableLiveData<Long>().apply { value = SystemInfoManager.getRamCapacity(getApplication()) }
+    val maxRamCapacity: MutableLiveData<Long>
+        get() = _maxRamCapacity
 
     private var _cpuUsages = MutableLiveData<DoubleArray>().apply { value = DoubleArray(0) }
     val cpuUsages: MutableLiveData<DoubleArray>
@@ -60,8 +73,20 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun systemInfoMessageReceived(intent: Intent?) {
         intent?.extras?.let {bundle ->
-            _ramInfo.value = bundle.getParcelable(SystemInfoService.RAM_INFO_KEY)
+            addRamInfoValue(bundle.getLong(SystemInfoService.RAM_INFO_KEY))
             _cpuUsages.value = bundle.getDoubleArray(SystemInfoService.CPU_CURRENT_USAGE_KEY)
+        }
+    }
+
+    private fun addRamInfoValue(ramAvailableNumber: Long) {
+        val normalizedNumber = ramAvailableNumber/ 1048576 //1024 * 1024
+        if (_ramUsed.value?.size == MAX_MEMORY_CHART_POINTS_NUMBER) {
+            _ramUsed.value?.remove()
+            _ramUsed.value?.offer(normalizedNumber)
+            _ramUsed.value = LinkedList(_ramUsed.value)
+        } else {
+            _ramUsed.value?.offer(normalizedNumber)
+            _ramUsed.value = LinkedList(_ramUsed.value)
         }
     }
 

@@ -10,7 +10,7 @@
 
     <androidx.cardview.widget.CardView android:layout_width="match_parent"
                                        android:layout_height="@dimen/system_state_battery_card_height"
-                                       android:layout_marginBottom="16dp">
+                                       android:layout_marginBottom="8dp">
         <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
                                                            android:layout_height="match_parent">
             <ImageView
@@ -60,13 +60,40 @@
 
     <androidx.cardview.widget.CardView android:layout_width="match_parent"
                                        android:layout_height="@dimen/system_state_default_card_height"
-                                       android:layout_marginBottom="16dp">
-
+                                       android:layout_marginBottom="8dp">
+        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+                                                           android:layout_height="match_parent">
+                <ImageView
+                        android:src="@drawable/ic_memory_black_24dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="8dp"
+                        android:id="@+id/memoryIconImageView"/>
+                <TextView
+                        android:text="@string/used_ram"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        style="@style/SystemInfoTitleTextStyle"
+                        app:layout_constraintStart_toEndOf="@id/memoryIconImageView" android:layout_marginStart="8dp"
+                        android:id="@+id/memoryTitle"
+                        app:layout_constraintBottom_toBottomOf="@+id/memoryIconImageView"
+                        app:layout_constraintTop_toTopOf="@+id/memoryIconImageView"/>
+            <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/memoryChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_margin="8dp" app:layout_constraintTop_toBottomOf="@+id/memoryTitle"
+                    tools:layout_editor_absoluteX="8dp" android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView android:layout_width="match_parent"
                                        android:layout_height="wrap_content"
-                                       android:layout_marginBottom="16dp">
+                                       android:layout_marginBottom="8dp">
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/cpuUsageRecyclerView"
                 android:layout_width="match_parent"
