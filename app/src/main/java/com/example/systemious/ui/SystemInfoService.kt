@@ -15,6 +15,7 @@ import android.os.Handler
 import android.app.ActivityManager
 import com.example.systemious.data.SystemInfoManager
 import com.example.systemious.domain.RamInfo
+import com.example.systemious.utils.getTextAndClose
 
 
 class SystemInfoService : Service() {
@@ -132,22 +133,13 @@ class SystemInfoService : Service() {
     private fun getIntentWithTrackedData(): Intent? {
 
 
-        val currentCoresFrequencies = SystemInfoManager.cpuUsageSnapshot
-        val ramInfo = getRamInfo()
+        val currentCoresFrequencies = SystemInfoManager.getCpuUsageSnapshot()
+        val ramInfo = SystemInfoManager.getRamInfo(this)
 
         return Intent(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION).apply {
             putExtra(RAM_INFO_KEY, ramInfo)
             putExtra(CPU_CURRENT_USAGE_KEY, currentCoresFrequencies)
         }
-    }
-
-    private fun getRamInfo(): RamInfo {
-        val memoryInfo = ActivityManager.MemoryInfo()
-        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        activityManager.getMemoryInfo(memoryInfo)
-
-        val ramInfo = RamInfo(memoryInfo.totalMem - memoryInfo.availMem, memoryInfo.totalMem)
-        return ramInfo
     }
 
     private fun notifyServiceStarted() {

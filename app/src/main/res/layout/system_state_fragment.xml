@@ -13,6 +13,11 @@
             android:layout_height="wrap_content"
             android:text="system state"/>
     <TextView
+            android:id="@+id/batteryTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="system state"/>
+    <TextView
             android:id="@+id/coresTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

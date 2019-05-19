@@ -35,6 +35,9 @@ class SystemStateFragment : Fragment() {
         })
         viewModel.coresNumber.observe(this, Observer<Int> { cores : Int -> coresTextView.text = cores.toString()})
         viewModel.cpuUsages.observe(this, Observer<DoubleArray> { curFreqs -> currUsageTextView.text = printIntArray(curFreqs, "curFreqs") })
+        viewModel.batteryPercentage.observe(this, Observer<Int> {
+                batteryPercentage -> batteryTextView.text = batteryPercentage.toString()
+        })
     }
 
     private fun printIntArray(intArray: DoubleArray, description: String): String {

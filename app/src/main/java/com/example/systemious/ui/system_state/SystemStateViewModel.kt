@@ -8,7 +8,7 @@ import android.content.IntentFilter
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.systemious.App
-import com.example.systemious.data.Repository
+import com.example.systemious.data.SystemInfoManager
 import com.example.systemious.domain.RamInfo
 import com.example.systemious.ui.SystemInfoService
 import com.example.systemious.utils.Constants
@@ -18,15 +18,17 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     val ramInfo: MutableLiveData<RamInfo>
         get() = _ramInfo
 
-    private var _coresNumber = MutableLiveData<Int>()
-        .apply { value = Repository.getCpuCoresNumber() }
+    private var _coresNumber = MutableLiveData<Int>().apply { value = SystemInfoManager.coresNumber }
     val coresNumber: MutableLiveData<Int>
         get() = _coresNumber
 
-    private var _cpuUsages = MutableLiveData<DoubleArray>()
-        .apply { value = DoubleArray(0) }
+    private var _cpuUsages = MutableLiveData<DoubleArray>().apply { value = DoubleArray(0) }
     val cpuUsages: MutableLiveData<DoubleArray>
         get() = _cpuUsages
+
+    private var _batteryPercentage = MutableLiveData<Int>().apply { value = 0 }
+    val batteryPercentage: MutableLiveData<Int>
+        get() = _batteryPercentage
 
     private val systemInfoBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -34,11 +36,24 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    init {
-        registerSystemInfoBroadcastReceiver()
+    private val mBatInfoReceiver = object : BroadcastReceiver() {
+        override fun onReceive(arg0: Context, intent: Intent) {
+            batteryPercentage.value = intent.getIntExtra("level", 0)
+        }
     }
 
-    private fun registerSystemInfoBroadcastReceiver() {
+
+    init {
+        registerSystemInfoReceiver()
+        registerBatteryReceiver()
+    }
+
+    private fun registerBatteryReceiver() {
+        getApplication<App>().registerReceiver(this.mBatInfoReceiver,
+            IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+
+    private fun registerSystemInfoReceiver() {
         val intentFilter = IntentFilter(Constants.SYSTEM_INFO_DETAILS_BROADCAST_RECEIVER_ACTION)
         getApplication<App>().registerReceiver(systemInfoBroadcastReceiver, intentFilter)
     }

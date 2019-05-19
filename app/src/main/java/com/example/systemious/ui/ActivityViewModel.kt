@@ -10,7 +10,6 @@ import com.example.systemious.ui.SystemInfoService.LocalBinder
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import android.content.IntentFilter
-import com.example.systemious.data.Repository
 import com.example.systemious.utils.Constants
 
 
@@ -33,7 +32,6 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
             val binder = binder as LocalBinder
             systemService = binder.service
             isBound = true
-            Repository.saveCpuCoresNumber(binder.service.cpuCoresNumber)
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
