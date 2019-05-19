@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.system_state_fragment.*
 import java.util.*
 import android.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
@@ -23,9 +24,12 @@ class SystemStateFragment : Fragment() {
         fun newInstance() = SystemStateFragment()
     }
 
-
     private lateinit var viewModel: SystemStateViewModel
     private var maxRamCapacity: Float = 0f
+    private var coresNumber: Int = 1
+    private val cpuUsageRecyclerAdapter by lazy {
+        activity?.baseContext?.let { CpuUsageRecyclerAdapter(mutableListOf(), it)}
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,18 +41,27 @@ class SystemStateFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        initCpuRecyclerView()
+
         viewModel = ViewModelProviders.of(this).get(SystemStateViewModel::class.java)
         viewModel.ramUsed.observe(this, Observer<Queue<Long>> { usedRamValueQueue ->
             drawChartLines(usedRamValueQueue, getString(R.string.memory_line_data_set_title), memoryChart)
         })
         viewModel.maxRamCapacity.observe(this,  Observer<Long> { maxRamCapacity ->
             this@SystemStateFragment.maxRamCapacity = maxRamCapacity.toFloat() })
-        /*viewModel.coresNumber.observe(this, Observer<Int> { cores : Int -> coresTextView.text = cores.toString()})
-        viewModel.cpuUsages.observe(this, Observer<DoubleArray> { curFreqs -> currUsageTextView.text = printIntArray(curFreqs, "curFreqs") })*/
+        viewModel.coresNumber.observe(this, Observer<Int> { cores -> this.coresNumber = cores})
+        viewModel.cpuUsages.observe(this, Observer<MutableList<Queue<Double>>> { usageQueuesList ->
+            cpuUsageRecyclerAdapter?.updateCpuCoresUsages(usageQueuesList)
+        })
         viewModel.batteryPercentage.observe(this, Observer<Int> { batteryPercentage ->
             batteryProgress.progress = batteryPercentage
             batteryLevelTextView.text = String.format(getString(com.example.systemious.R.string.battery_level_format), batteryPercentage)
         })
+    }
+
+    private fun initCpuRecyclerView() {
+        cpuUsageRecyclerView.adapter = cpuUsageRecyclerAdapter
+        cpuUsageRecyclerView.layoutManager = LinearLayoutManager(context)
     }
 
     private fun drawChartLines(usedRamValueQueue: Queue<Long>, lineDataSetTitle: String, chart: LineChart) {

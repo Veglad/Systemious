@@ -17,11 +17,16 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
 
     companion object {
         private const val MAX_MEMORY_CHART_POINTS_NUMBER = 100
+        private const val MAX_CPU_CHART_POINTS_NUMBER = 100
     }
 
     private var _ramUsed = MutableLiveData<Queue<Long>>().apply { value = LinkedList<Long>() }
     val ramUsed: MutableLiveData<Queue<Long>>
         get() = _ramUsed
+
+    private var _cpuUsages = MutableLiveData<MutableList<Queue<Double>>>()
+    val cpuUsages: MutableLiveData<MutableList<Queue<Double>>>
+        get() = _cpuUsages
 
     private var _coresNumber = MutableLiveData<Int>().apply { value = SystemInfoManager.coresNumber }
     val coresNumber: MutableLiveData<Int>
@@ -30,10 +35,6 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     private var _maxRamCapacity = MutableLiveData<Long>().apply { value = SystemInfoManager.getRamCapacity(getApplication()) }
     val maxRamCapacity: MutableLiveData<Long>
         get() = _maxRamCapacity
-
-    private var _cpuUsages = MutableLiveData<DoubleArray>().apply { value = DoubleArray(0) }
-    val cpuUsages: MutableLiveData<DoubleArray>
-        get() = _cpuUsages
 
     private var _batteryPercentage = MutableLiveData<Int>().apply { value = 0 }
     val batteryPercentage: MutableLiveData<Int>
@@ -51,10 +52,18 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-
     init {
         registerSystemInfoReceiver()
         registerBatteryReceiver()
+        initCpuUsagesQueues()
+    }
+
+    private fun initCpuUsagesQueues() {
+        _cpuUsages.value = mutableListOf()
+        val coresNumber = _coresNumber.value ?: return
+        for (i in 0 until coresNumber) {
+            _cpuUsages.value?.add(LinkedList<Double>() )
+        }
     }
 
     private fun registerBatteryReceiver() {
@@ -70,8 +79,22 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
     private fun systemInfoMessageReceived(intent: Intent?) {
         intent?.extras?.let {bundle ->
             addRamInfoValue(bundle.getLong(SystemInfoService.RAM_INFO_KEY))
-            _cpuUsages.value = bundle.getDoubleArray(SystemInfoService.CPU_CURRENT_USAGE_KEY)
+            bundle.getDoubleArray(SystemInfoService.CPU_CURRENT_USAGE_KEY)?.let { addCpuInfoValue(it) }
         }
+    }
+
+    private fun addCpuInfoValue(doubleArray: DoubleArray){
+        val queueUsageList = _cpuUsages.value ?: return
+        for (i in 0 until queueUsageList.size) {
+            if (queueUsageList[i].size == MAX_CPU_CHART_POINTS_NUMBER) {
+                queueUsageList[i].remove()
+                queueUsageList[i].offer(doubleArray[i])
+            } else {
+                queueUsageList[i].offer(doubleArray[i])
+            }
+        }
+
+        _cpuUsages.value = queueUsageList
     }
 
     private fun addRamInfoValue(ramAvailableNumber: Long) {
@@ -79,11 +102,10 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
         if (_ramUsed.value?.size == MAX_MEMORY_CHART_POINTS_NUMBER) {
             _ramUsed.value?.remove()
             _ramUsed.value?.offer(normalizedNumber)
-            _ramUsed.value = LinkedList(_ramUsed.value)
         } else {
             _ramUsed.value?.offer(normalizedNumber)
-            _ramUsed.value = LinkedList(_ramUsed.value)
         }
+        _ramUsed.value = LinkedList(_ramUsed.value)
     }
 
     override fun onCleared() {
