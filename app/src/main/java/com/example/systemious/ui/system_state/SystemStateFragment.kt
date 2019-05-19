@@ -29,14 +29,16 @@ class SystemStateFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel = ViewModelProviders.of(this).get(SystemStateViewModel::class.java)
-        viewModel.ramInfo.observe(this, Observer<RamInfo> { ramInfo ->
+        /*viewModel.ramInfo.observe(this, Observer<RamInfo> { ramInfo ->
             systemStateTextView.text = "Total: " + ramInfo.totalRam + "\nUsed: " + ramInfo.usedRam
         })
         viewModel.coresNumber.observe(this, Observer<Int> { cores : Int -> coresTextView.text = cores.toString()})
-        viewModel.cpuUsages.observe(this, Observer<DoubleArray> { curFreqs -> currUsageTextView.text = printIntArray(curFreqs, "curFreqs") })
-        viewModel.batteryPercentage.observe(this, Observer<Int> {
-                batteryPercentage -> batteryTextView.text = batteryPercentage.toString()
+        viewModel.cpuUsages.observe(this, Observer<DoubleArray> { curFreqs -> currUsageTextView.text = printIntArray(curFreqs, "curFreqs") })*/
+        viewModel.batteryPercentage.observe(this, Observer<Int> { batteryPercentage ->
+            batteryProgress.progress = batteryPercentage
+            batteryLevelTextView.text = String.format(getString(R.string.battery_level_format), batteryPercentage)
         })
     }
 

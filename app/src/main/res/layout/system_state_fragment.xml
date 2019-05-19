@@ -1,32 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.system_state.SystemStateFragment"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/light_gray">
 
-    <TextView
-            android:id="@+id/systemStateTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="system state"/>
-    <TextView
-            android:id="@+id/batteryTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="system state"/>
-    <TextView
-            android:id="@+id/coresTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="system state"/>
+    <androidx.cardview.widget.CardView android:layout_width="match_parent"
+                                       android:layout_height="@dimen/system_state_battery_card_height"
+                                       android:layout_marginBottom="16dp">
+        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+                                                           android:layout_height="match_parent">
+            <ImageView
+                    android:src="@drawable/ic_battery_std_primary_24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="8dp"
+                    android:id="@+id/batteryIconImageView"/>
+            <TextView
+                    android:text="@string/battery_level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/SystemInfoTitleTextStyle"
+                    app:layout_constraintStart_toEndOf="@id/batteryIconImageView" android:layout_marginStart="8dp"
+                    android:id="@+id/batteryLevelTitle"
+                    app:layout_constraintBottom_toBottomOf="@+id/batteryIconImageView"
+                    app:layout_constraintTop_toTopOf="@+id/batteryIconImageView"/>
+            <ProgressBar
+                    android:id="@+id/batteryProgress"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    style="@style/BatteryProgressBarHorizontal"
+                    app:layout_constraintTop_toBottomOf="@+id/batteryLevelTitle"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <TextView
-            android:id="@+id/currUsageTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="system state"/>
+            <TextView
+                    android:id="@+id/batteryLevelTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="@+id/batteryProgress"
+                    app:layout_constraintStart_toStartOf="@+id/batteryProgress"
+                    app:layout_constraintBottom_toBottomOf="@+id/batteryProgress"
+                    app:layout_constraintTop_toTopOf="@+id/batteryProgress"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView android:layout_width="match_parent"
+                                       android:layout_height="@dimen/system_state_default_card_height"
+                                       android:layout_marginBottom="16dp">
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView android:layout_width="match_parent"
+                                       android:layout_height="wrap_content"
+                                       android:layout_marginBottom="16dp">
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cpuUsageRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

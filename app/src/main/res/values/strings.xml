@@ -8,4 +8,8 @@
     <string name="system_info_notification_description">Tracking CPU, GPU, RAM usage</string>
     <string name="system_info_notification_action_stop">Stop</string>
     <string name="tracker_toggle">Tracker toggle</string>
+    <string name="battery_level">Battery level</string>
+
+    <!--System info screen-->
+    <string name="battery_level_format">%d%%</string>
 </resources>

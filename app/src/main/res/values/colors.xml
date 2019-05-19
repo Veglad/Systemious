@@ -9,5 +9,8 @@
     <color name="primary_text_color">#ffffff</color>
     <color name="secondary_text_color">#000000</color>
 
+    <color name="light_gray">#ddd</color>
+    <color name="white">#fff</color>
+
     <color name="play_color">#6FFF65</color>
 </resources>
