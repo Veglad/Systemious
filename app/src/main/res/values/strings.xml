@@ -15,4 +15,5 @@
     <string name="used_ram">Used RAM</string>
     <string name="memory_line_data_set_title">RAM capacity in MB</string>
     <string name="cpu_cores_usage">CPU cores usage</string>
+    <string name="apps_manager">Apps manager</string>
 </resources>

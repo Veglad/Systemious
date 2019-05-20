@@ -44,9 +44,10 @@ class SystemStateActivity : AppCompatActivity() {
                 R.id.navigationSystemDetails -> {
                     supportActionBar?.title = getString(R.string.system_info)
                 }
-                R.id.navigationFileManager-> {
+                R.id.navigationFileManager -> {
                     supportActionBar?.title = getString(R.string.file_manager)
                 }
+                else -> supportActionBar?.title = getString(R.string.apps_manager)
             }
         }
     }

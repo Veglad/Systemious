@@ -6,9 +6,13 @@
 
     <fragment android:id="@+id/navigationSystemState"
               android:name="com.example.systemious.ui.system_state.SystemStateFragment"
-              android:label="system_state_fragment" tools:layout="@layout/system_state_fragment"/>
+              android:label="system_state_fragment" tools:layout="@layout/system_state_fragment">
+        <action android:id="@+id/action_navigationSystemState_self" app:destination="@id/navigationSystemState"/>
+    </fragment>
     <fragment android:id="@+id/navigationSystemDetails" android:name="com.example.systemious.ui.system_details.SystemDetails"
               android:label="system_details_fragment" tools:layout="@layout/system_details_fragment"/>
     <fragment android:id="@+id/navigationFileManager" android:name="com.example.systemious.ui.file_manager.FileManager"
               android:label="file_manager_fragment" tools:layout="@layout/file_manager_fragment"/>
+    <fragment android:id="@+id/navigationAppManager" android:name="com.example.systemious.ui.app_manager.AppManager"
+              android:label="app_manager_fragment" tools:layout="@layout/app_manager_fragment"/>
 </navigation>

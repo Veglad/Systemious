@@ -16,4 +16,9 @@
             android:icon="@drawable/ic_file_manager_black_24dp"
             android:title="@string/file_manager"/>
 
+    <item
+            android:id="@+id/navigationAppManager"
+            android:icon="@drawable/ic_apps_black_24dp"
+            android:title="@string/apps_manager"/>
+
 </menu>
