@@ -4,11 +4,15 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.system_details.SystemDetails">
-
-    <TextView
+        android:background="@color/light_gray"
+        tools:context=".ui.app_manager.AppManager">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/systemDetailsSwipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="system details"/>
-
+            android:layout_height="match_parent">
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/systemDetailsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>
