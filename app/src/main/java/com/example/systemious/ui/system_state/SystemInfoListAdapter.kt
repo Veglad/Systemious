@@ -85,7 +85,7 @@ class SystemInfoListAdapter(private val context: Context, private val coresNumbe
             CPU_LIST_VIEW_TYPE -> {
                 val cpuUsageQueue = cpuUsagesQueue[getCpuItemPosition(position)]
                 val cpuUsagesViewHolder = holder as CpuUsagesViewHolder
-                drawChartLines(cpuUsageQueue, cpuUsagesViewHolder.cpuUsageChart, "core ${getCpuItemPosition(position)}", true)
+                drawChartLines(cpuUsageQueue, cpuUsagesViewHolder.cpuUsageChart, "core №${getCpuItemPosition(position) + 1}", true)
             }
         }
     }
@@ -135,16 +135,22 @@ class SystemInfoListAdapter(private val context: Context, private val coresNumbe
             chart.axisRight.setDrawLabels(false)
             chart.xAxis.setDrawLabels(false)
 
-            if (isCpuChart) {
-                val valueFormatter = object : IndexAxisValueFormatter() {
+            val valueFormatter = if (isCpuChart) {
+                object : IndexAxisValueFormatter() {
                     override fun getFormattedValue(value: Float): String {
                         return String.format("%.3f%%", value * 100)
                     }
                 }
-
-                chart.axisLeft.valueFormatter = valueFormatter
-                chart.axisRight.valueFormatter = valueFormatter
+            } else {
+                object : IndexAxisValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        return String.format("%.0f MB", value)
+                    }
+                }
             }
+
+            chart.axisLeft.valueFormatter = valueFormatter
+            chart.axisRight.valueFormatter = valueFormatter
         }
 
         lineDataSet.setDrawValues(false)
