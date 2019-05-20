@@ -20,8 +20,8 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
         private const val MAX_CPU_CHART_POINTS_NUMBER = 100
     }
 
-    private var _ramUsed = MutableLiveData<Queue<Long>>().apply { value = LinkedList<Long>() }
-    val ramUsed: MutableLiveData<Queue<Long>>
+    private var _ramUsed = MutableLiveData<Queue<Double>>().apply { value = LinkedList<Double>() }
+    val ramUsed: MutableLiveData<Queue<Double>>
         get() = _ramUsed
 
     private var _cpuUsages = MutableLiveData<MutableList<Queue<Double>>>()
@@ -101,9 +101,9 @@ class SystemStateViewModel(application: Application) : AndroidViewModel(applicat
         val normalizedNumber = ramAvailableNumber/ 1048576 //1024 * 1024
         if (_ramUsed.value?.size == MAX_MEMORY_CHART_POINTS_NUMBER) {
             _ramUsed.value?.remove()
-            _ramUsed.value?.offer(normalizedNumber)
+            _ramUsed.value?.offer(normalizedNumber.toDouble())
         } else {
-            _ramUsed.value?.offer(normalizedNumber)
+            _ramUsed.value?.offer(normalizedNumber.toDouble())
         }
         _ramUsed.value = LinkedList(_ramUsed.value)
     }

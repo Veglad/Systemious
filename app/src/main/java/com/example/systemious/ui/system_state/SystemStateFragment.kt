@@ -10,16 +10,8 @@ import androidx.lifecycle.Observer
 import com.example.systemious.R
 import kotlinx.android.synthetic.main.system_state_fragment.*
 import java.util.*
-import android.graphics.Color
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.LineData
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-
 
 
 class SystemStateFragment : Fragment() {
@@ -31,9 +23,9 @@ class SystemStateFragment : Fragment() {
     private lateinit var viewModel: SystemStateViewModel
     private var maxRamCapacity: Float = 0f
     private var coresNumber: Int = 1
-    private val systemInfoListAdapter by lazy {
-        activity?.baseContext?.let { SystemInfoListAdapter(it)}
-    }
+    private var systemInfoListAdapter: SystemInfoListAdapter? = null
+
+    private var isRecyclerInit = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,15 +37,25 @@ class SystemStateFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        initCpuRecyclerView()
-
         viewModel = ViewModelProviders.of(this).get(SystemStateViewModel::class.java)
-        viewModel.ramUsed.observe(this, Observer<Queue<Long>> { usedRamValueQueue ->
+
+        viewModel.coresNumber.observe(this, Observer<Int> { cores ->
+            this.coresNumber = cores
+            if (!isRecyclerInit) {
+                isRecyclerInit = true
+                initCpuRecyclerView()
+            }
+            initViewModels()
+        })
+    }
+
+    private fun initViewModels() {
+        viewModel.ramUsed.observe(this, Observer<Queue<Double>> { usedRamValueQueue ->
             systemInfoListAdapter?.updateMemoryChart(usedRamValueQueue)
         })
-        viewModel.maxRamCapacity.observe(this,  Observer<Long> { maxRamCapacity ->
-            this@SystemStateFragment.maxRamCapacity = maxRamCapacity.toFloat() })
-        viewModel.coresNumber.observe(this, Observer<Int> { cores -> this.coresNumber = cores})
+        viewModel.maxRamCapacity.observe(this, Observer<Long> { maxRamCapacity ->
+            this@SystemStateFragment.maxRamCapacity = maxRamCapacity.toFloat()
+        })
         viewModel.cpuUsages.observe(this, Observer<MutableList<Queue<Double>>> { usageQueuesList ->
             systemInfoListAdapter?.updateCpuCoresUsages(usageQueuesList)
         })
@@ -63,6 +65,7 @@ class SystemStateFragment : Fragment() {
     }
 
     private fun initCpuRecyclerView() {
+        activity?.baseContext?.let { systemInfoListAdapter = SystemInfoListAdapter(it, coresNumber) }
         systemInfoMainRecyclerView.adapter = systemInfoListAdapter
         systemInfoMainRecyclerView.layoutManager = LinearLayoutManager(context)
         (systemInfoMainRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
