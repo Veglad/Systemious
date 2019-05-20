@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView android:layout_width="match_parent"
+                                   android:layout_height="wrap_content"
+                                   xmlns:android="http://schemas.android.com/apk/res/android"
+                                   xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+                                                       android:layout_height="match_parent">
+        <ImageView
+                android:src="@drawable/ic_cpu_black_24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:id="@+id/cpuIconImageView"/>
+        <TextView
+                android:text="@string/cpu_cores_usage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/SystemInfoTitleTextStyle"
+                app:layout_constraintStart_toEndOf="@id/cpuIconImageView" android:layout_marginStart="8dp"
+                android:id="@+id/cpuTitle"
+                app:layout_constraintBottom_toBottomOf="@+id/cpuIconImageView"
+                app:layout_constraintTop_toTopOf="@+id/cpuIconImageView"/>
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cpuUsageRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/cpuTitle"
+                android:paddingBottom="32dp"
+                android:clipToPadding="false"
+                android:layout_marginTop="8dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

@@ -17,6 +17,10 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineData
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
+
+
 
 class SystemStateFragment : Fragment() {
 
@@ -27,8 +31,8 @@ class SystemStateFragment : Fragment() {
     private lateinit var viewModel: SystemStateViewModel
     private var maxRamCapacity: Float = 0f
     private var coresNumber: Int = 1
-    private val cpuUsageRecyclerAdapter by lazy {
-        activity?.baseContext?.let { CpuUsageRecyclerAdapter(mutableListOf(), it)}
+    private val systemInfoListAdapter by lazy {
+        activity?.baseContext?.let { SystemInfoListAdapter(it)}
     }
 
     override fun onCreateView(
@@ -45,54 +49,22 @@ class SystemStateFragment : Fragment() {
 
         viewModel = ViewModelProviders.of(this).get(SystemStateViewModel::class.java)
         viewModel.ramUsed.observe(this, Observer<Queue<Long>> { usedRamValueQueue ->
-            drawChartLines(usedRamValueQueue, getString(R.string.memory_line_data_set_title), memoryChart)
+            systemInfoListAdapter?.updateMemoryChart(usedRamValueQueue)
         })
         viewModel.maxRamCapacity.observe(this,  Observer<Long> { maxRamCapacity ->
             this@SystemStateFragment.maxRamCapacity = maxRamCapacity.toFloat() })
         viewModel.coresNumber.observe(this, Observer<Int> { cores -> this.coresNumber = cores})
         viewModel.cpuUsages.observe(this, Observer<MutableList<Queue<Double>>> { usageQueuesList ->
-            cpuUsageRecyclerAdapter?.updateCpuCoresUsages(usageQueuesList)
+            systemInfoListAdapter?.updateCpuCoresUsages(usageQueuesList)
         })
         viewModel.batteryPercentage.observe(this, Observer<Int> { batteryPercentage ->
-            batteryProgress.progress = batteryPercentage
-            batteryLevelTextView.text = String.format(getString(com.example.systemious.R.string.battery_level_format), batteryPercentage)
+            systemInfoListAdapter?.updateBatteryPercentage(batteryPercentage)
         })
     }
 
     private fun initCpuRecyclerView() {
-        cpuUsageRecyclerView.adapter = cpuUsageRecyclerAdapter
-        cpuUsageRecyclerView.layoutManager = LinearLayoutManager(context)
-    }
-
-    private fun drawChartLines(usedRamValueQueue: Queue<Long>, lineDataSetTitle: String, chart: LineChart) {
-        val seriesData = ArrayList<Entry>()
-
-        for ((i, ramValue) in usedRamValueQueue.withIndex()) {
-            seriesData.add(Entry(i.toFloat(), ramValue.toFloat()))
-        }
-
-        val lineDataSet: LineDataSet
-        if (chart.data != null && chart.data.dataSetCount > 0) {
-            lineDataSet = chart.data.getDataSetByIndex(0) as LineDataSet
-            lineDataSet.values = seriesData
-            chart.data.notifyDataChanged()
-            chart.notifyDataSetChanged()
-        } else {
-            lineDataSet = LineDataSet(seriesData, lineDataSetTitle)
-            lineDataSet.setDrawIcons(false)
-            lineDataSet.color = context?.let { ContextCompat.getColor(it, R.color.secondary_color) } ?: Color.DKGRAY
-            lineDataSet.setCircleColor(Color.DKGRAY)
-            lineDataSet.lineWidth = 1f
-            lineDataSet.circleRadius = 2f
-            lineDataSet.setDrawCircleHole(false)
-            chart.description.isEnabled = false
-
-            chart.axisRight.setDrawLabels(false)
-            chart.xAxis.setDrawLabels(false)
-        }
-
-        lineDataSet.setDrawValues(false)
-        chart.data = LineData(lineDataSet)
-        chart.invalidate()
+        systemInfoMainRecyclerView.adapter = systemInfoListAdapter
+        systemInfoMainRecyclerView.layoutManager = LinearLayoutManager(context)
+        (systemInfoMainRecyclerView.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
     }
 }
