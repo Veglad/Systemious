@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.systemious.R
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -45,6 +46,7 @@ class CpuUsageRecyclerAdapter(private var cpuCoreUsages: MutableList<Queue<Doubl
         if (chart.data != null && chart.data.dataSetCount > 0) {
             lineDataSet = chart.data.getDataSetByIndex(0) as LineDataSet
             lineDataSet.values = seriesData
+            lineDataSet.label = lineDataSetTitle
             chart.data.notifyDataChanged()
             chart.notifyDataSetChanged()
         } else {
@@ -56,6 +58,9 @@ class CpuUsageRecyclerAdapter(private var cpuCoreUsages: MutableList<Queue<Doubl
             lineDataSet.circleRadius = 2f
             lineDataSet.setDrawCircleHole(false)
             chart.description.isEnabled = false
+
+            chart.axisRight.setDrawLabels(false)
+            chart.xAxis.setDrawLabels(false)
 
             val valueFormatter = object : IndexAxisValueFormatter() {
                 override fun getFormattedValue(value: Float): String {

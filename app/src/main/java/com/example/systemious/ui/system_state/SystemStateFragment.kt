@@ -86,6 +86,9 @@ class SystemStateFragment : Fragment() {
             lineDataSet.circleRadius = 2f
             lineDataSet.setDrawCircleHole(false)
             chart.description.isEnabled = false
+
+            chart.axisRight.setDrawLabels(false)
+            chart.xAxis.setDrawLabels(false)
         }
 
         lineDataSet.setDrawValues(false)
