@@ -5,4 +5,5 @@
 
     <dimen name="system_state_default_card_height">200dp</dimen>
     <dimen name="system_state_battery_card_height">100dp</dimen>
+    <dimen name="app_info_card_height">70dp</dimen>
 </resources>
