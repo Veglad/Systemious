@@ -13,6 +13,14 @@ import android.R.attr.y
 import android.R.attr.x
 import android.graphics.Point
 import android.view.Display
+import java.text.DecimalFormat
+import android.R
+import android.hardware.SensorManager
+import android.content.Context.SENSOR_SERVICE
+import android.hardware.Sensor
+import androidx.core.content.ContextCompat.getSystemService
+import android.widget.TextView
+
 
 
 
@@ -40,6 +48,18 @@ class SystemInfoManager {
         var radioVersion = Build.getRadioVersion() ?: "Not available"
 
         var androidVersion = Build.VERSION.RELEASE
+
+        val cpuArchitecture = System.getProperty("os.arch") ?: ""
+
+        val cpuShortDescription =  CpuInfoCollector.calcCpuCoreNumber().toString() + " cores " +
+                DecimalFormat("#.##")
+                    .format(CpuInfoCollector.takeMaxCoresFrequencies()[0].toDouble()/ 1000_000)  + " GHz"
+
+        val internalStorageMemory = MemoryManager.getTotalInternalMemorySize()
+
+        val externalStoragMemory = MemoryManager.getTotalExternalMemorySize()
+
+        fun getScreeenDensity(context: Context) = context.resources.displayMetrics.densityDpi
 
         fun getScreenResolution(context: Context): String {
             val windowsManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -73,6 +93,11 @@ class SystemInfoManager {
             activityManager.getMemoryInfo(memoryInfo)
 
             return memoryInfo.totalMem
+        }
+
+        fun getSensorslist(context: Context): MutableList<Sensor>? {
+            val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager?
+            return sensorManager?.getSensorList(Sensor.TYPE_ALL) ?: return null
         }
     }
 }

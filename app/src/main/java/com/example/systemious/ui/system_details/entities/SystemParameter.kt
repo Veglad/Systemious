@@ -5,5 +5,5 @@ data class SystemParameter(var parameterName: String = "",
                            var parameterType: ParameterTypes = ParameterTypes.DEVICE)
 
 enum class ParameterTypes{
-    DEVICE, OS, CPU, MEMORY, SENSORS
+    DEVICE, CPU, MEMORY, OS, SENSORS
 }

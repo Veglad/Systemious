@@ -9,6 +9,7 @@ import com.example.systemious.data.SystemInfoManager
 import com.example.systemious.ui.system_details.entities.ParameterTypes
 import com.example.systemious.ui.system_details.entities.SystemParameter
 import kotlinx.coroutines.*
+import java.text.DecimalFormat
 
 class SystemDetailsViewModel(application: Application) : AndroidViewModel(application) {
     private val job: Job = Job()
@@ -41,15 +42,37 @@ class SystemDetailsViewModel(application: Application) : AndroidViewModel(applic
 
     private fun loadParameterList() : MutableList<SystemParameter> {
         val systemParameterList = mutableListOf<SystemParameter>()
+        val context = getApplication<App>()
 
         systemParameterList.add(SystemParameter("Device name", SystemInfoManager.deviceName, ParameterTypes.DEVICE))
         systemParameterList.add(SystemParameter("Model", SystemInfoManager.deviceModel, ParameterTypes.DEVICE))
+        systemParameterList.add(SystemParameter("Screen dpi",
+            SystemInfoManager.getScreeenDensity(context).toString() + "dpi", ParameterTypes.DEVICE))
+        systemParameterList.add(SystemParameter("CPU", SystemInfoManager.cpuShortDescription, ParameterTypes.CPU))
+        systemParameterList.add(SystemParameter("CPU architecture", SystemInfoManager.cpuArchitecture, ParameterTypes.CPU))
+        systemParameterList.add(SystemParameter("RAM capacity",
+            formatRamCapacity(SystemInfoManager.getRamCapacity(context)), ParameterTypes.CPU))
+        systemParameterList.add(SystemParameter("Internal Storage", SystemInfoManager.internalStorageMemory, ParameterTypes.MEMORY))
+        systemParameterList.add(SystemParameter("External Storage",
+            SystemInfoManager.externalStoragMemory ?: "Not available", ParameterTypes.MEMORY))
         systemParameterList.add(SystemParameter("Serial number", SystemInfoManager.serialNumber, ParameterTypes.OS))
         systemParameterList.add(SystemParameter("Radio version", SystemInfoManager.radioVersion, ParameterTypes.OS))
         systemParameterList.add(SystemParameter("Screen resolution", SystemInfoManager.getScreenResolution(app), ParameterTypes.OS))
-        systemParameterList.add(SystemParameter("Android version", SystemInfoManager.androidVersion))
+        systemParameterList.add(SystemParameter("Android version", SystemInfoManager.androidVersion, ParameterTypes.OS))
+
+        val sensors = SystemInfoManager.getSensorslist(context)
+        sensors?.let {
+            for (sensor in sensors) {
+                systemParameterList.add(SystemParameter(sensor.name, sensor.vendor, ParameterTypes.SENSORS))
+            }
+        }
 
         systemParameterList.sortBy { it.parameterType }
         return systemParameterList
+    }
+
+    private fun formatRamCapacity(capacity: Long): String {
+        val normalizedNumber = capacity/ 1073741824 //1024 * 1024 * 1024
+        return DecimalFormat("#.#").format(normalizedNumber) + " Gb"
     }
 }
