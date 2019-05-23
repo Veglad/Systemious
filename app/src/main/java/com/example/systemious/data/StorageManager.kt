@@ -16,7 +16,7 @@ val IMAGE_EXTENSIONS = listOf("jpg", "png", "gif", "jpeg", "webp")
 fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
     path?.let {
         val rootDir = if (name.isEmpty()) File(path) else File(path, name)
-        if (!rootDir.canRead()) 1//inaccessible
+        if (!rootDir.canRead() || rootDir.list().isEmpty()) return mutableListOf()
 
         val fileList = mutableListOf<FileItem>()
         for (fileName in rootDir.list()) {
@@ -53,7 +53,7 @@ fun getBitmapFromFile(file: File): Bitmap? {
 }
 
 fun setFileItemFileSize(fileItem: FileItem, file: File) {
-    var size = file.length().toDouble()
+    var size = if (fileItem.isDirectory) file.length().toDouble() else folderSize(file).toDouble()
     var sizeSuffix = "B"
 
     if (size > 1024) {
@@ -71,6 +71,17 @@ fun setFileItemFileSize(fileItem: FileItem, file: File) {
 
     fileItem.size = size
     fileItem.sizeSuffix = sizeSuffix
+}
+
+fun folderSize(directory: File): Long {
+    var length: Long = 0
+    for (file in directory.listFiles()!!) {
+        length += if (file.isFile)
+            file.length()
+        else
+            folderSize(file)
+    }
+    return length
 }
 
 /**

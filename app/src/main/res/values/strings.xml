@@ -17,4 +17,7 @@
     <string name="cpu_cores_usage">CPU cores usage</string>
     <string name="apps_manager">Apps manager</string>
     <string name="details">Details</string>
+
+    <!-- File Manager -->
+    <string name="something_went_wrong">Oops, something went wrong. Try again</string>
 </resources>

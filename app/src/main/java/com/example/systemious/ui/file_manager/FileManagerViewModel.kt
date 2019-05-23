@@ -2,6 +2,7 @@ package com.example.systemious.ui.file_manager
 
 import android.app.Application
 import android.content.Intent
+import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +17,7 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     private val job: Job = Job()
     private val uiCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + job)
 
-    private var _currentPath = MutableLiveData<String>().apply { value = "storage" }
+    private var _currentPath = MutableLiveData<String>().apply { value = "/storage"}
     val currentPath: LiveData<String> = _currentPath
 
     private val _isLoading = MutableLiveData<Boolean>()
