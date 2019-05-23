@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.systemious.data.getOpenFileIntent
+import com.example.systemious.data.loadFileItems
 import kotlinx.coroutines.*
 import java.io.File
 
@@ -25,34 +27,31 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     val error: LiveData<Exception> = _error
 
     init {
+        loadItems()
+    }
+
+    private fun loadItems() {
         uiCoroutineScope.launch {
             _isLoading.value = true
             try {
                 _fileItemList.value = withContext(Dispatchers.IO) { loadFileItems(_currentPath.value) }
             } catch (ex: Exception) {
                 _error.value = ex
-            }
-            finally {
+            } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    private fun loadFileItems(path: String?): MutableList<FileItem> {
-        path?.let {
-            val rootDir = File(path)
-            if (!rootDir.canRead()) 1//inaccessible
-
-            val fileList = mutableListOf<FileItem>()
-            for (file in rootDir.list()) {
-                if (!file.startsWith(".")) {
-                    fileList.add(FileItem(name = file))
-                }
+    fun openSelectedItem(fileItem: FileItem) {
+        if (fileItem.isDirectory) {
+            _currentPath.value = _currentPath.value + File.separator + fileItem.name
+            loadItems()
+        } else {
+            _currentPath.value?.let { path ->
+                getOpenFileIntent(path, fileItem.name, getApplication())
             }
-
-            fileList.sortBy { it.name.compareTo(it.name) }
-            return fileList
-        } ?: return mutableListOf()
+        }
     }
 
     override fun onCleared() {
