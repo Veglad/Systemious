@@ -1,11 +1,13 @@
 package com.example.systemious.ui.file_manager
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.systemious.data.getOpenFileIntent
 import com.example.systemious.data.loadFileItems
+import com.example.systemious.ui.EventWithContent
 import kotlinx.coroutines.*
 import java.io.File
 
@@ -25,6 +27,9 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
 
     private val _error = MutableLiveData<Exception>()
     val error: LiveData<Exception> = _error
+
+    private val _openFileIntent = MutableLiveData<EventWithContent<Intent>>()
+    val openFileIntent: LiveData<EventWithContent<Intent>> = _openFileIntent
 
     init {
         loadItems()
@@ -49,7 +54,10 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
             loadItems()
         } else {
             _currentPath.value?.let { path ->
-                getOpenFileIntent(path, fileItem.name, getApplication())
+                val intent = getOpenFileIntent(path, fileItem.name, getApplication())
+                intent?.let {
+                    _openFileIntent.value = EventWithContent(intent)
+                }
             }
         }
     }

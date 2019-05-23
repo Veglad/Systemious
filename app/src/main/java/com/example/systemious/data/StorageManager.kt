@@ -4,13 +4,14 @@ import android.content.Context
 import androidx.core.content.FileProvider
 import com.example.systemious.ui.file_manager.FileItem
 import java.io.File
-import com.example.systemious.App
-import androidx.core.content.ContextCompat.startActivity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 
 
 
 
+val IMAGE_EXTENSIONS = listOf("jpg", "png", "gif", "jpeg", "webp")
 
 fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
     path?.let {
@@ -18,15 +19,58 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
         if (!rootDir.canRead()) 1//inaccessible
 
         val fileList = mutableListOf<FileItem>()
-        for (file in rootDir.list()) {
-            if (!file.startsWith(".")) {
-                fileList.add(FileItem(name = file))
+        for (fileName in rootDir.list()) {
+            if (!fileName.startsWith(".")) {
+                val fileItem = FileItem()
+                val file = File(path, fileName)
+
+                fileItem.name = fileName
+                fileItem.isDirectory = file.isDirectory
+                setFileItemFileSize(fileItem, file)
+                setBitmapIfImage(fileItem, file, IMAGE_EXTENSIONS)
+
+                fileList.add(fileItem)
             }
         }
 
         fileList.sortBy { it.name.compareTo(it.name) }
         return fileList
     } ?: return mutableListOf()
+}
+
+fun setBitmapIfImage(fileItem: FileItem, file: File, imageExtensions: List<String>) {
+    for (extension in imageExtensions) {
+        if (file.name.toLowerCase().endsWith(extension)) {
+            fileItem.icon = getBitmapFromFile(file)
+        }
+    }
+}
+
+fun getBitmapFromFile(file: File): Bitmap? {
+    val options = BitmapFactory.Options()
+    options.inPreferredConfig = Bitmap.Config.ARGB_8888
+    return BitmapFactory.decodeFile(file.path, options)
+}
+
+fun setFileItemFileSize(fileItem: FileItem, file: File) {
+    var size = file.length().toDouble()
+    var sizeSuffix = "B"
+
+    if (size > 1024) {
+        size /= 1024
+        sizeSuffix = "KB"
+        if (size > 1024) {
+            size /= 1024
+            sizeSuffix = "MB"
+        }
+        if (size > 1024) {
+            size /= 1024
+            sizeSuffix = "GB"
+        }
+    }
+
+    fileItem.size = size
+    fileItem.sizeSuffix = sizeSuffix
 }
 
 /**
