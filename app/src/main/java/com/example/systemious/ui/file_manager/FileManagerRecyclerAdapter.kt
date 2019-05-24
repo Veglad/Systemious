@@ -1,5 +1,6 @@
 package com.example.systemious.ui.file_manager
 
+import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +12,11 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.systemious.R
-import androidx.appcompat.widget.PopupMenu
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import android.widget.FrameLayout
 
-
-class FileManagerRecyclerAdapter(private val context: Context)
+class FileManagerRecyclerAdapter(private val context: Context, private val activity: Activity)
     : RecyclerView.Adapter<FileManagerRecyclerAdapter.ViewHolder>() {
 
     private val fileItemList = mutableListOf<FileItem>()
@@ -73,24 +75,23 @@ class FileManagerRecyclerAdapter(private val context: Context)
     }
 
     private fun popUpMenu(holder: ViewHolder) {
-        val popup = PopupMenu(context, holder.moreButton)
-        popup.inflate(R.menu.file_more_menu)
+        val optionsBottomSheetDialog = BottomSheetDialog(activity)
+        val sheetView = activity.layoutInflater.inflate(R.layout.file_manager_item_options_bottom_sheet, null)
+        optionsBottomSheetDialog.setContentView(sheetView)
 
-        popup.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.infoFileManagerMoreItem -> {
-                    onInfoSelectedListener?.invoke(fileItemList[holder.adapterPosition])
-                    true
-                }
+        val deleteItem = sheetView.findViewById<View>(R.id.file_manager_delete_option)
+        val infoItem = sheetView.findViewById<View>(R.id.file_manager_info_option)
 
-                R.id.deleteFileManagerMoreItem -> {
-                    onFileDeleteSelectedListener?.invoke(fileItemList[holder.adapterPosition])
-                    true
-                }
-                else -> {false}
-            }
+        deleteItem.setOnClickListener {
+            onFileDeleteSelectedListener?.invoke(fileItemList[holder.adapterPosition])
+            optionsBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
-        popup.show()
+        infoItem.setOnClickListener {
+            onInfoSelectedListener?.invoke(fileItemList[holder.adapterPosition])
+            optionsBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        optionsBottomSheetDialog.show()
     }
 
     fun updateAppInfoList(fileItemList: List<FileItem>) {

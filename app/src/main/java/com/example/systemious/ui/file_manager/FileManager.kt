@@ -85,7 +85,7 @@ class FileManager : Fragment() {
                                 !shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
 
                     snackbar = Snackbar.make(
-                        fileManagerSwipeRefresh,
+                        fileManagerCoordinatorLayout,
                         activity.getString(R.string.memory_permission_disabled),
                         Snackbar.LENGTH_INDEFINITE
                     )
@@ -142,31 +142,14 @@ class FileManager : Fragment() {
 
     private fun initRecyclerView() {
         activity?.baseContext?.let { context ->
-            fileAdapter = FileManagerRecyclerAdapter(context)
+            fileAdapter = FileManagerRecyclerAdapter(context, activity as Activity)
             fileAdapter?.setOnFileItemClickListener { fileItem -> viewModel.openSelectedItem(fileItem) }
-            fileAdapter?.setOnFileDeleteSelectedListener { fileItem -> showDeleteDialog(fileItem) }
+            fileAdapter?.setOnFileDeleteSelectedListener { fileItem -> viewModel.deleteItem(fileItem) }
             with(filesRecyclerView) {
                 layoutManager = LinearLayoutManager(context)
                 adapter = fileAdapter
             }
         }
-
-
-    }
-
-    private fun showDeleteDialog(fileItem: FileItem) {
-        val activity = activity as Activity
-        val alert = AlertDialog.Builder(activity)
-        alert.setTitle(activity.getString(R.string.delete_dialog_title))
-        alert.setMessage(activity.getString(R.string.delete_dialog_description))
-
-        alert.setPositiveButton(android.R.string.yes) { _, _ ->
-            viewModel.deleteItem(fileItem)
-        }
-        alert.setNegativeButton(android.R.string.no) { dialog, _ ->
-            dialog.cancel()
-        }
-        alert.show()
     }
 
     private fun initViewModels() {
@@ -177,7 +160,7 @@ class FileManager : Fragment() {
             fileManagerPath.text = path
         })
         viewModel.error.observe(this, Observer {
-            Snackbar.make(fileManagerSwipeRefresh, getString(R.string.something_went_wrong), Snackbar.LENGTH_SHORT)
+            Snackbar.make(fileManagerCoordinatorLayout, getString(R.string.something_went_wrong), Snackbar.LENGTH_SHORT)
                 .show()
         })
         viewModel.openFileIntent.observe(this, Observer { intentEvent ->
@@ -186,7 +169,7 @@ class FileManager : Fragment() {
                 if (intent.resolveActivity(activity.packageManager) != null) {
                     startActivity(intent)
                 } else {
-                    Snackbar.make(fileManagerSwipeRefresh,
+                    Snackbar.make(fileManagerCoordinatorLayout,
                         activity.getString(com.example.systemious.R.string.no_apps_that_can_open_file),
                         Snackbar.LENGTH_SHORT).show()
                 }
