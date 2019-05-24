@@ -7,8 +7,7 @@ import java.io.File
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-
-
+import com.example.systemious.data.MemoryManager.Companion.getFileSize
 
 
 val IMAGE_EXTENSIONS = listOf("jpg", "png", "gif", "jpeg", "webp")
@@ -22,7 +21,7 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
         for (fileName in rootDir.list()) {
             if (!fileName.startsWith(".")) {
                 val fileItem = FileItem()
-                val file = File(path, fileName)
+                val file = File("$path/$fileName")
 
                 fileItem.name = fileName
                 fileItem.isDirectory = file.isDirectory
@@ -53,7 +52,7 @@ fun getBitmapFromFile(file: File): Bitmap? {
 }
 
 fun setFileItemFileSize(fileItem: FileItem, file: File) {
-    var size = if (fileItem.isDirectory) file.length().toDouble() else folderSize(file).toDouble()
+    var size = getFileSize(file).toDouble()
     var sizeSuffix = "B"
 
     if (size > 1024) {
@@ -73,22 +72,11 @@ fun setFileItemFileSize(fileItem: FileItem, file: File) {
     fileItem.sizeSuffix = sizeSuffix
 }
 
-fun folderSize(directory: File): Long {
-    var length: Long = 0
-    for (file in directory.listFiles()!!) {
-        length += if (file.isFile)
-            file.length()
-        else
-            folderSize(file)
-    }
-    return length
-}
-
 /**
  *
  */
 fun getOpenFileIntent(path: String, fileName: String, context: Context): Intent? {
-    val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", File(path, fileName))
+    val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", File("$path/$fileName"))
     val mime = context.contentResolver.getType(uri)
 
     val intent = Intent()

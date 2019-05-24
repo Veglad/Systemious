@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.systemious.R
+import java.text.DecimalFormat
 
 
 class FileManagerRecyclerAdapter(private val context: Context)
@@ -32,7 +33,8 @@ class FileManagerRecyclerAdapter(private val context: Context)
         val fileItem = fileItemList[position]
         with(holder) {
             fileName.text = fileItem.name
-            fileSize.text = "${fileItem.size} ${fileItem.sizeSuffix}"
+            val size = DecimalFormat("#.##").format(fileItem.size)
+            fileSize.text = "$size ${fileItem.sizeSuffix}"
 
             if (fileItem.icon == null) {
                 val drawable = if (fileItem.isDirectory) {

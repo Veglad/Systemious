@@ -2,6 +2,7 @@ package com.example.systemious.data
 
 import android.os.Environment
 import android.os.StatFs
+import java.io.File
 import java.text.DecimalFormat
 
 
@@ -23,16 +24,22 @@ class MemoryManager {
             return formatSize(totalBlocks * blockSize)
         }
 
+
+
         fun getTotalExternalMemorySize(): String? {
             return if (externalMemoryAvailable()) {
-                val path = Environment.getExternalStorageDirectory()
-                val stat = StatFs(path.path)
-                val blockSize = stat.blockSizeLong
-                val totalBlocks = stat.blockCountLong
-                formatSize(totalBlocks * blockSize)
+                val file = Environment.getExternalStorageDirectory()
+                formatSize(getFileSize(file))
             } else {
                 null
             }
+        }
+
+        fun getFileSize(file: File): Long {
+            val stat = StatFs(file.path)
+            val blockSize = stat.blockSizeLong
+            val totalBlocks = stat.blockCountLong
+            return totalBlocks * blockSize
         }
 
         private fun formatSize(size: Long): String {
