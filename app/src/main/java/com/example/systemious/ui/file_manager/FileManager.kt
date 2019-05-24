@@ -13,14 +13,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.example.systemious.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.file_manager_fragment.*
+
+
 
 class FileManager : Fragment() {
 
@@ -163,8 +163,16 @@ class FileManager : Fragment() {
                 .show()
         })
         viewModel.openFileIntent.observe(this, Observer { intentEvent ->
-            intentEvent.getContentIfNotHandled()?.let {
-                startActivity(it)
+            intentEvent.getContentIfNotHandled()?.let { intent ->
+                val activity = activity as Activity
+                if (intent.resolveActivity(activity.packageManager) != null) {
+                    startActivity(intent)
+                } else {
+                    Snackbar.make(fileManagerFrameLayout,
+                        activity.getString(com.example.systemious.R.string.no_apps_that_can_open_file),
+                        Snackbar.LENGTH_SHORT).show()
+                }
+
             }
         })
         viewModel.fileItemList.observe(this, Observer { fileList ->

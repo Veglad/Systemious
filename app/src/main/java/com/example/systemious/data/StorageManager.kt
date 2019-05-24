@@ -76,6 +76,8 @@ fun setFileItemFileSize(fileItem: FileItem, file: File) {
  *
  */
 fun getOpenFileIntent(path: String, fileName: String, context: Context): Intent? {
+    val file = File("$path/$fileName")
+    if (!file.exists()) return null
     val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", File("$path/$fileName"))
     val mime = context.contentResolver.getType(uri)
 

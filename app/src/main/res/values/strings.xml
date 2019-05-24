@@ -23,4 +23,5 @@
     <string name="memory_permission_disabled">File Manager feature requires storage access. Please,
         grant it in the settings.</string>
     <string name="grant_permission">Grant</string>
+    <string name="no_apps_that_can_open_file">There are no apps that can open that file</string>
 </resources>
