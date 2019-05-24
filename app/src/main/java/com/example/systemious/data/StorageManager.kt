@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.example.systemious.data.MemoryManager.Companion.getFileSize
+import com.example.systemious.ui.file_manager.FileType
 
 
 val IMAGE_EXTENSIONS = listOf("jpg", "png", "gif", "jpeg", "webp")
@@ -23,7 +24,7 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
                 val fileItem = FileItem()
 
                 fileItem.name = file.name
-                fileItem.isDirectory = file.isDirectory
+                fileItem.type = if(file.isDirectory) FileType.DIRECTORY else FileType.FILE
                 setFileItemFileSize(fileItem, file)
                 setBitmapIfImage(fileItem, file, IMAGE_EXTENSIONS)
 

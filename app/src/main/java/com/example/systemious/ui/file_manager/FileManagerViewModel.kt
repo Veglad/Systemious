@@ -54,7 +54,11 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
         uiCoroutineScope.launch {
             _isLoading.value = true
             try {
-                _fileItemList.value = withContext(Dispatchers.IO) { loadFileItems(_currentPath.value) }
+                val files = withContext(Dispatchers.IO) { loadFileItems(_currentPath.value) }
+                if (_currentPath.value != rootDirectory) {
+                    files.add(0, FileItem(name = "..", type = FileType.PARENT_FOLDER))
+                }
+                _fileItemList.value = files
             } catch (ex: Exception) {
                 _error.value = ex
             } finally {
@@ -64,11 +68,16 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun openSelectedItem(fileItem: FileItem) {
-        if (fileItem.isDirectory) {
-            _currentPath.value = _currentPath.value + File.separator + fileItem.name
-            loadFiles()
-        } else {
-            _currentPath.value?.let { path ->
+        when {
+            fileItem.type == FileType.PARENT_FOLDER -> {
+                _currentPath.value = File(_currentPath.value).parent
+                loadFiles()
+            }
+            fileItem.type == FileType.DIRECTORY -> {
+                _currentPath.value = _currentPath.value + File.separator + fileItem.name
+                loadFiles()
+            }
+            else -> _currentPath.value?.let { path -> //TODO: resolve issue
                 val intent = getOpenFileIntent(path, fileItem.name, getApplication())
                 intent?.let {
                     _openFileIntent.value = EventWithContent(intent)
@@ -81,4 +90,6 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
         super.onCleared()
         job.cancel()
     }
+
+
 }

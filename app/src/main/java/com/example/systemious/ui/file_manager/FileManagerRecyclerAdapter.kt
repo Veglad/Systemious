@@ -32,22 +32,28 @@ class FileManagerRecyclerAdapter(private val context: Context)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val fileItem = fileItemList[position]
         with(holder) {
-            fileName.text = fileItem.name
-            val size = DecimalFormat("#.##").format(fileItem.size)
-            fileSize.text = "$size ${fileItem.sizeSuffix}"
-
-            if (fileItem.icon == null) {
-                val drawable = if (fileItem.isDirectory) {
-                    ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp)
-                } else {
-                    ContextCompat.getDrawable(context, R.drawable.ic_insert_drive_file_black_24dp)
-                }
-                fileIcon.setImageDrawable(drawable)
-            } else {
-                fileIcon.setImageBitmap(fileItem.icon)
-            }
             itemView.setOnClickListener {
                 onFileItemClickListener?.invoke(fileItemList[holder.adapterPosition])
+            }
+
+            fileName.text = fileItem.name
+
+            if (fileItem.type == FileType.PARENT_FOLDER) {
+                fileIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp))
+            } else {
+                val size = DecimalFormat("#.##").format(fileItem.size)
+                fileSize.text = "$size ${fileItem.sizeSuffix}"
+
+                if (fileItem.icon == null) {
+                    val drawable = if (fileItem.type == FileType.DIRECTORY) { //TODO: Use glide
+                        ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp)
+                    } else {
+                        ContextCompat.getDrawable(context, R.drawable.ic_insert_drive_file_black_24dp)
+                    }
+                    fileIcon.setImageDrawable(drawable)
+                } else {
+                    fileIcon.setImageBitmap(fileItem.icon)
+                }
             }
         }
     }
