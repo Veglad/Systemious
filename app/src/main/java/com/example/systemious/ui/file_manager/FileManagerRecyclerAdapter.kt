@@ -2,9 +2,11 @@ package com.example.systemious.ui.file_manager
 
 import android.app.Activity
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -14,22 +16,18 @@ import com.bumptech.glide.Glide
 import com.example.systemious.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import android.widget.FrameLayout
+import java.net.URI
+import java.text.DecimalFormat
 
 class FileManagerRecyclerAdapter(private val context: Context, private val activity: Activity)
     : RecyclerView.Adapter<FileManagerRecyclerAdapter.ViewHolder>() {
 
     private val fileItemList = mutableListOf<FileItem>()
     private var onFileItemClickListener: ((fileItem: FileItem) -> Unit)? = null
-    private var onInfoSelectedListener: ((fileItem: FileItem) -> Unit)? = null
     private var onFileDeleteSelectedListener: ((fileItem: FileItem) -> Unit)? = null
 
     fun setOnFileItemClickListener(onFileItemClickListener: (FileItem) -> Unit) {
         this.onFileItemClickListener = onFileItemClickListener
-    }
-
-    fun setOnInfoSelectedListener(onInfoSelectedListener: (FileItem) -> Unit) {
-        this.onInfoSelectedListener = onInfoSelectedListener
     }
 
     fun setOnFileDeleteSelectedListener(onFileDeleteSelectedListener: (FileItem) -> Unit) {
@@ -54,27 +52,33 @@ class FileManagerRecyclerAdapter(private val context: Context, private val activ
 
             if (fileItem.type == FileType.PARENT_FOLDER) {
                 fileIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp))
+                holder.moreButton.visibility = View.GONE
             } else {
-                if (fileItem.iconUri == null) {
-                    val drawable = if (fileItem.type == FileType.DIRECTORY) {
-                        ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp)
-                    } else {
-                        ContextCompat.getDrawable(context, R.drawable.ic_insert_drive_file_black_24dp)
-                    }
-                    fileIcon.setImageDrawable(drawable)
-                } else {
-                    Glide.with(context)
-                        .load(fileItem.iconUri)
-                        .into(fileIcon)
-                }
+                holder.moreButton.visibility = View.VISIBLE
+                loadIconToImageView(fileItem.iconUri, fileItem.type, fileIcon)
             }
             moreButton.setOnClickListener {
-                popUpMenu(holder)
+                showOptionsDialog(holder)
             }
         }
     }
 
-    private fun popUpMenu(holder: ViewHolder) {
+    private fun loadIconToImageView(uri: Uri?, fileType: FileType, imageView: ImageView) {
+        if (uri == null) {
+            val drawable = if (fileType == FileType.DIRECTORY) {
+                ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp)
+            } else {
+                ContextCompat.getDrawable(context, R.drawable.ic_insert_drive_file_black_24dp)
+            }
+            imageView.setImageDrawable(drawable)
+        } else {
+            Glide.with(context)
+                .load(uri)
+                .into(imageView)
+        }
+    }
+
+    private fun showOptionsDialog(holder: ViewHolder) {
         val optionsBottomSheetDialog = BottomSheetDialog(activity)
         val sheetView = activity.layoutInflater.inflate(R.layout.file_manager_item_options_bottom_sheet, null)
         optionsBottomSheetDialog.setContentView(sheetView)
@@ -87,11 +91,36 @@ class FileManagerRecyclerAdapter(private val context: Context, private val activ
             optionsBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
         infoItem.setOnClickListener {
-            onInfoSelectedListener?.invoke(fileItemList[holder.adapterPosition])
             optionsBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            val fileItem = fileItemList[holder.adapterPosition]
+            showInfoDialog(fileItem)
         }
 
         optionsBottomSheetDialog.show()
+    }
+
+    private fun showInfoDialog(fileItem: FileItem) {
+        val infoBottomSheetDialog = BottomSheetDialog(activity)
+        val sheetView = activity.layoutInflater.inflate(R.layout.file_manager_item_info_bottom_sheet, null)
+        infoBottomSheetDialog.setContentView(sheetView)
+        infoBottomSheetDialog.show()
+
+        val icon = infoBottomSheetDialog.findViewById<ImageView>(R.id.fileManagerInfoImage)
+        val name = infoBottomSheetDialog.findViewById<TextView>(R.id.fileManagerInfoName)
+        val path = infoBottomSheetDialog.findViewById<TextView>(R.id.fileManagerInfoPath)
+        val size = infoBottomSheetDialog.findViewById<TextView>(R.id.fileManagerInfoSize)
+        val modified = infoBottomSheetDialog.findViewById<TextView>(R.id.fileManagerInfoModificationDate)
+        val okButton = infoBottomSheetDialog.findViewById<TextView>(R.id.fileManagerInfoOkButton)
+
+        val fileInfo = FileManagerAdapterHelper.getAdvancedFileInfo(fileItem)
+
+        icon?.let { loadIconToImageView(fileInfo.iconUri, fileInfo.fileType, it) }
+        name?.text = fileInfo.fileName
+        path?.text = fileInfo.filePath
+        val fileSize = DecimalFormat("#.##").format(fileInfo.fileSize)
+        size?.text = "$fileSize ${fileInfo.fileSizeSuffix}"
+        modified?.text = fileInfo.fileLastModificationDate
+        okButton?.setOnClickListener { infoBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN }
     }
 
     fun updateAppInfoList(fileItemList: List<FileItem>) {

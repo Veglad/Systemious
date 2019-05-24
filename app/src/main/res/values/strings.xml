@@ -28,4 +28,8 @@
     <string name="info">Info</string>
     <string name="delete_dialog_title">Delete</string>
     <string name="delete_dialog_description">Are you sure you want to delete?</string>
+    <string name="path">Path:</string>
+    <string name="size">Size:</string>
+    <string name="modified">Modified:</string>
+    <string name="ok">OK</string>
 </resources>

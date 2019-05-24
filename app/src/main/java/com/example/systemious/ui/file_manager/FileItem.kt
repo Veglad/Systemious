@@ -3,6 +3,7 @@ package com.example.systemious.ui.file_manager
 import android.net.Uri
 
 data class FileItem (var name: String = "",
+                     var absolutePath: String = "",
                      var type: FileType = FileType.FILE,
                      var iconUri: Uri? = null)
 

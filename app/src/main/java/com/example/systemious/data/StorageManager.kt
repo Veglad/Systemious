@@ -23,6 +23,7 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
 
                 fileItem.name = file.name
                 fileItem.type = if(file.isDirectory) FileType.DIRECTORY else FileType.FILE
+                fileItem.absolutePath = file.absolutePath
                 setBitmapIfImage(fileItem, file, IMAGE_EXTENSIONS)
 
                 fileList.add(fileItem)
@@ -51,7 +52,7 @@ fun deleteFile(path: String, fileItem: FileItem) {
     }
 }
 
-fun setFileItemFileSize(file: File) : Pair<Double, String>{
+fun getFolderSizeParams(file: File) : Pair<Double, String>{
     var size = getFileFolderSize(file).toDouble()
     var sizeSuffix = "B"
 
