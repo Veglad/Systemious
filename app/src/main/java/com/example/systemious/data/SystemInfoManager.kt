@@ -73,10 +73,6 @@ class SystemInfoManager {
             return "$width x $height" //example "480 * 800"
         }
 
-        fun getAndroidVersion(packageInfo: PackageInfo): String {
-            return packageInfo.versionName + " " + packageInfo.versionCode
-        }
-
         fun getCpuUsageSnapshot() = CpuInfoCollector.takeCpuUsageSnapshot()
 
         fun getRamUsedValue(context: Context): Long {

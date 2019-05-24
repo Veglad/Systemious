@@ -29,17 +29,13 @@ class MemoryManager {
         fun getTotalExternalMemorySize(): String? {
             return if (externalMemoryAvailable()) {
                 val file = Environment.getExternalStorageDirectory()
-                formatSize(getFileSize(file))
+                val stat = StatFs(file.path)
+                val blockSize = stat.blockSizeLong
+                val totalBlocks = stat.blockCountLong
+                formatSize(totalBlocks * blockSize)
             } else {
                 null
             }
-        }
-
-        fun getFileSize(file: File): Long {
-            val stat = StatFs(file.path)
-            val blockSize = stat.blockSizeLong
-            val totalBlocks = stat.blockCountLong
-            return totalBlocks * blockSize
         }
 
         private fun formatSize(size: Long): String {

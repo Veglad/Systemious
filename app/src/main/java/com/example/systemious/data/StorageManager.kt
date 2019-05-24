@@ -5,10 +5,7 @@ import androidx.core.content.FileProvider
 import com.example.systemious.ui.file_manager.FileItem
 import java.io.File
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import com.example.systemious.data.MemoryManager.Companion.getFileSize
 import com.example.systemious.ui.file_manager.FileType
 
 
@@ -26,7 +23,6 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
 
                 fileItem.name = file.name
                 fileItem.type = if(file.isDirectory) FileType.DIRECTORY else FileType.FILE
-                setFileItemFileSize(fileItem, file)
                 setBitmapIfImage(fileItem, file, IMAGE_EXTENSIONS)
 
                 fileList.add(fileItem)
@@ -46,8 +42,8 @@ fun setBitmapIfImage(fileItem: FileItem, file: File, imageExtensions: List<Strin
     }
 }
 
-fun setFileItemFileSize(fileItem: FileItem, file: File) {
-    var size = getFileSize(file).toDouble()
+fun setFileItemFileSize(file: File) : Pair<Double, String>{
+    var size = getFileFolderSize(file).toDouble()
     var sizeSuffix = "B"
 
     if (size > 1024) {
@@ -63,13 +59,24 @@ fun setFileItemFileSize(fileItem: FileItem, file: File) {
         }
     }
 
-    fileItem.size = size
-    fileItem.sizeSuffix = sizeSuffix
+    return size to sizeSuffix
 }
 
-/**
- *
- */
+fun getFileFolderSize(dir: File): Long {
+    var size: Long = 0
+    if (dir.isDirectory) {
+        for (file in dir.listFiles()!!) {
+            size += if (file.isFile) {
+                file.length()
+            } else
+                getFileFolderSize(file)
+        }
+    } else if (dir.isFile) {
+        size += dir.length()
+    }
+    return size
+}
+
 fun getOpenFileIntent(path: String, fileName: String, context: Context): Intent? {
     val file = File("$path/$fileName")
     if (!file.exists()) return null

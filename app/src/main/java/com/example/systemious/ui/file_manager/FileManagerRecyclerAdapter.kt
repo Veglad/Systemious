@@ -42,9 +42,6 @@ class FileManagerRecyclerAdapter(private val context: Context)
             if (fileItem.type == FileType.PARENT_FOLDER) {
                 fileIcon.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp))
             } else {
-                val size = DecimalFormat("#.##").format(fileItem.size)
-                fileSize.text = "$size ${fileItem.sizeSuffix}"
-
                 if (fileItem.iconUri == null) {
                     val drawable = if (fileItem.type == FileType.DIRECTORY) {
                         ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp)
@@ -70,6 +67,5 @@ class FileManagerRecyclerAdapter(private val context: Context)
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileIcon: ImageView = itemView.findViewById(R.id.fileManagerIcon)
         val fileName: TextView = itemView.findViewById(R.id.fileManagerFileNameTextView)
-        val fileSize: TextView = itemView.findViewById(R.id.fileManagerFileSizeTextView)
     }
 }
