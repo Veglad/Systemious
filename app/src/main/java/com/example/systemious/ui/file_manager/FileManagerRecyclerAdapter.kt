@@ -4,13 +4,14 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.systemious.R
-import java.text.DecimalFormat
+import androidx.appcompat.widget.PopupMenu
 
 
 class FileManagerRecyclerAdapter(private val context: Context)
@@ -18,9 +19,19 @@ class FileManagerRecyclerAdapter(private val context: Context)
 
     private val fileItemList = mutableListOf<FileItem>()
     private var onFileItemClickListener: ((fileItem: FileItem) -> Unit)? = null
+    private var onInfoSelectedListener: ((fileItem: FileItem) -> Unit)? = null
+    private var onFileDeleteSelectedListener: ((fileItem: FileItem) -> Unit)? = null
 
     fun setOnFileItemClickListener(onFileItemClickListener: (FileItem) -> Unit) {
         this.onFileItemClickListener = onFileItemClickListener
+    }
+
+    fun setOnInfoSelectedListener(onInfoSelectedListener: (FileItem) -> Unit) {
+        this.onInfoSelectedListener = onInfoSelectedListener
+    }
+
+    fun setOnFileDeleteSelectedListener(onFileDeleteSelectedListener: (FileItem) -> Unit) {
+        this.onFileDeleteSelectedListener = onFileDeleteSelectedListener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -55,7 +66,31 @@ class FileManagerRecyclerAdapter(private val context: Context)
                         .into(fileIcon)
                 }
             }
+            moreButton.setOnClickListener {
+                popUpMenu(holder)
+            }
         }
+    }
+
+    private fun popUpMenu(holder: ViewHolder) {
+        val popup = PopupMenu(context, holder.moreButton)
+        popup.inflate(R.menu.file_more_menu)
+
+        popup.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.infoFileManagerMoreItem -> {
+                    onInfoSelectedListener?.invoke(fileItemList[holder.adapterPosition])
+                    true
+                }
+
+                R.id.deleteFileManagerMoreItem -> {
+                    onFileDeleteSelectedListener?.invoke(fileItemList[holder.adapterPosition])
+                    true
+                }
+                else -> {false}
+            }
+        }
+        popup.show()
     }
 
     fun updateAppInfoList(fileItemList: List<FileItem>) {
@@ -64,8 +99,15 @@ class FileManagerRecyclerAdapter(private val context: Context)
         notifyDataSetChanged()
     }
 
+    fun removeItem(fileItem: FileItem) {
+        val position = fileItemList.indexOf(fileItem)
+        fileItemList.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val fileIcon: ImageView = itemView.findViewById(R.id.fileManagerIcon)
         val fileName: TextView = itemView.findViewById(R.id.fileManagerFileNameTextView)
+        val moreButton: ImageButton = itemView.findViewById(R.id.fileManagerMoreImageButton)
     }
 }

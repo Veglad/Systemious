@@ -6,11 +6,13 @@ import android.os.Environment
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.systemious.data.deleteFile
 import com.example.systemious.data.getOpenFileIntent
 import com.example.systemious.data.loadFileItems
 import com.example.systemious.ui.Event
 import com.example.systemious.ui.EventWithContent
 import kotlinx.coroutines.*
+import timber.log.Timber
 import java.io.File
 
 class FileManagerViewModel(application: Application) : AndroidViewModel(application) {
@@ -36,6 +38,9 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
 
     private val _grantPermission = MutableLiveData<Event>()
     val grantPermission: LiveData<Event> = _grantPermission
+
+    private val _deletedFile = MutableLiveData<EventWithContent<FileItem>>()
+    val deletedFile: LiveData<EventWithContent<FileItem>> = _deletedFile
 
     init {
         if(checkIfCanLoadFiles()) {
@@ -91,5 +96,14 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
         job.cancel()
     }
 
-
+    fun deleteItem(fileItem: FileItem) {
+        _currentPath.value?.let { path ->
+            try {
+                deleteFile(path, fileItem)
+                _deletedFile.value = EventWithContent(fileItem)
+            } catch (ex: Exception) {
+                Timber.e("Delete file error: ${ex.message}")
+            }
+        }
+    }
 }

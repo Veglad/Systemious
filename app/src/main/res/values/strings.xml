@@ -24,4 +24,8 @@
         grant it in the settings.</string>
     <string name="grant_permission">Grant</string>
     <string name="no_apps_that_can_open_file">There are no apps that can open that file</string>
+    <string name="delete">Delete</string>
+    <string name="info">Info</string>
+    <string name="delete_dialog_title">Delete</string>
+    <string name="delete_dialog_description">Are you sure you want to delete?</string>
 </resources>

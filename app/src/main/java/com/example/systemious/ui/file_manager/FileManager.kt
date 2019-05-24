@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.systemious.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.file_manager_fragment.*
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
+import android.content.DialogInterface
+import androidx.appcompat.app.AlertDialog
 
 
 class FileManager : Fragment() {
@@ -142,14 +142,31 @@ class FileManager : Fragment() {
 
     private fun initRecyclerView() {
         activity?.baseContext?.let { context ->
+            fileAdapter = FileManagerRecyclerAdapter(context)
+            fileAdapter?.setOnFileItemClickListener { fileItem -> viewModel.openSelectedItem(fileItem) }
+            fileAdapter?.setOnFileDeleteSelectedListener { fileItem -> showDeleteDialog(fileItem) }
             with(filesRecyclerView) {
                 layoutManager = LinearLayoutManager(context)
-                fileAdapter = FileManagerRecyclerAdapter(context)
                 adapter = fileAdapter
             }
         }
 
-        fileAdapter?.setOnFileItemClickListener { fileItem -> viewModel.openSelectedItem(fileItem) }
+
+    }
+
+    private fun showDeleteDialog(fileItem: FileItem) {
+        val activity = activity as Activity
+        val alert = AlertDialog.Builder(activity)
+        alert.setTitle(activity.getString(R.string.delete_dialog_title))
+        alert.setMessage(activity.getString(R.string.delete_dialog_description))
+
+        alert.setPositiveButton(android.R.string.yes) { _, _ ->
+            viewModel.deleteItem(fileItem)
+        }
+        alert.setNegativeButton(android.R.string.no) { dialog, _ ->
+            dialog.cancel()
+        }
+        alert.show()
     }
 
     private fun initViewModels() {
@@ -182,6 +199,11 @@ class FileManager : Fragment() {
         viewModel.grantPermission.observe(this, Observer { event ->
             event.performEventIfNotHandled {
                 requestPermission()
+            }
+        })
+        viewModel.deletedFile.observe(this, Observer { deleteEvent ->
+            deleteEvent.getContentIfNotHandled()?.let { fileItem ->
+                fileAdapter?.removeItem(fileItem)
             }
         })
     }

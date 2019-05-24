@@ -42,6 +42,15 @@ fun setBitmapIfImage(fileItem: FileItem, file: File, imageExtensions: List<Strin
     }
 }
 
+fun deleteFile(path: String, fileItem: FileItem) {
+    val file = File("$path/${fileItem.name}")
+    if (fileItem.type == FileType.DIRECTORY) {
+        file.deleteRecursively()
+    } else {
+        file.delete()
+    }
+}
+
 fun setFileItemFileSize(file: File) : Pair<Double, String>{
     var size = getFileFolderSize(file).toDouble()
     var sizeSuffix = "B"
