@@ -77,7 +77,7 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
                 _currentPath.value = _currentPath.value + File.separator + fileItem.name
                 loadFiles()
             }
-            else -> _currentPath.value?.let { path -> //TODO: resolve issue
+            else -> _currentPath.value?.let { path ->
                 val intent = getOpenFileIntent(path, fileItem.name, getApplication())
                 intent?.let {
                     _openFileIntent.value = EventWithContent(intent)

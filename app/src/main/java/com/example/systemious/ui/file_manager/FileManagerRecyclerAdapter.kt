@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.systemious.R
 import java.text.DecimalFormat
 
@@ -44,15 +45,17 @@ class FileManagerRecyclerAdapter(private val context: Context)
                 val size = DecimalFormat("#.##").format(fileItem.size)
                 fileSize.text = "$size ${fileItem.sizeSuffix}"
 
-                if (fileItem.icon == null) {
-                    val drawable = if (fileItem.type == FileType.DIRECTORY) { //TODO: Use glide
+                if (fileItem.iconUri == null) {
+                    val drawable = if (fileItem.type == FileType.DIRECTORY) {
                         ContextCompat.getDrawable(context, R.drawable.ic_folder_secondary_24dp)
                     } else {
                         ContextCompat.getDrawable(context, R.drawable.ic_insert_drive_file_black_24dp)
                     }
                     fileIcon.setImageDrawable(drawable)
                 } else {
-                    fileIcon.setImageBitmap(fileItem.icon)
+                    Glide.with(context)
+                        .load(fileItem.iconUri)
+                        .into(fileIcon)
                 }
             }
         }

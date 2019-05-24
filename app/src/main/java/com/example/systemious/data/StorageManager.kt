@@ -7,6 +7,7 @@ import java.io.File
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import com.example.systemious.data.MemoryManager.Companion.getFileSize
 import com.example.systemious.ui.file_manager.FileType
 
@@ -40,15 +41,9 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
 fun setBitmapIfImage(fileItem: FileItem, file: File, imageExtensions: List<String>) {
     for (extension in imageExtensions) {
         if (file.name.toLowerCase().endsWith(extension)) {
-            fileItem.icon = getBitmapFromFile(file)
+            fileItem.iconUri = Uri.fromFile(file)
         }
     }
-}
-
-fun getBitmapFromFile(file: File): Bitmap? {
-    val options = BitmapFactory.Options()
-    options.inPreferredConfig = Bitmap.Config.ARGB_8888
-    return BitmapFactory.decodeFile(file.path, options)
 }
 
 fun setFileItemFileSize(fileItem: FileItem, file: File) {
