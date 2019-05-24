@@ -19,7 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.systemious.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.file_manager_fragment.*
-
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL
 
 
 class FileManager : Fragment() {
@@ -84,7 +85,7 @@ class FileManager : Fragment() {
                                 !shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)
 
                     snackbar = Snackbar.make(
-                        fileManagerFrameLayout,
+                        fileManagerSwipeRefresh,
                         activity.getString(R.string.memory_permission_disabled),
                         Snackbar.LENGTH_INDEFINITE
                     )
@@ -168,7 +169,7 @@ class FileManager : Fragment() {
                 if (intent.resolveActivity(activity.packageManager) != null) {
                     startActivity(intent)
                 } else {
-                    Snackbar.make(fileManagerFrameLayout,
+                    Snackbar.make(fileManagerSwipeRefresh,
                         activity.getString(com.example.systemious.R.string.no_apps_that_can_open_file),
                         Snackbar.LENGTH_SHORT).show()
                 }

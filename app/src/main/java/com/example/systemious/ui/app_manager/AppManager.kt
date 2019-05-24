@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.systemious.R
@@ -46,7 +47,7 @@ class AppManager : Fragment() {
     }
 
     private fun initRecyclerView() {
-        activity?.baseContext?.let {context ->
+        activity?.baseContext?.let { context ->
             appInfoAdapter = AppManagerRecyclerAdapter(context)
             with(appManagerRecyclerView) {
                 adapter = appInfoAdapter
