@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.systemious.data.getOpenFileIntent
 import com.example.systemious.data.loadFileItems
+import com.example.systemious.ui.Event
 import com.example.systemious.ui.EventWithContent
 import kotlinx.coroutines.*
 import java.io.File
@@ -16,8 +17,9 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
 
     private val job: Job = Job()
     private val uiCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private var rootDirectory = Environment.getExternalStorageDirectory().absolutePath
 
-    private var _currentPath = MutableLiveData<String>().apply { value = "/storage"}
+    private var _currentPath = MutableLiveData<String>().apply { value = rootDirectory }
     val currentPath: LiveData<String> = _currentPath
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -32,11 +34,23 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     private val _openFileIntent = MutableLiveData<EventWithContent<Intent>>()
     val openFileIntent: LiveData<EventWithContent<Intent>> = _openFileIntent
 
+    private val _grantPermission = MutableLiveData<Event>()
+    val grantPermission: LiveData<Event> = _grantPermission
+
     init {
-        loadItems()
+        if(checkIfCanLoadFiles()) {
+            loadFiles()
+        } else {
+            _grantPermission.value = Event()
+        }
     }
 
-    private fun loadItems() {
+    private fun checkIfCanLoadFiles(): Boolean {
+        val rootFiles = Environment.getExternalStorageDirectory().listFiles()
+        return rootFiles != null && rootFiles.isNotEmpty()
+    }
+
+    fun loadFiles() {
         uiCoroutineScope.launch {
             _isLoading.value = true
             try {
@@ -52,7 +66,7 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     fun openSelectedItem(fileItem: FileItem) {
         if (fileItem.isDirectory) {
             _currentPath.value = _currentPath.value + File.separator + fileItem.name
-            loadItems()
+            loadFiles()
         } else {
             _currentPath.value?.let { path ->
                 val intent = getOpenFileIntent(path, fileItem.name, getApplication())

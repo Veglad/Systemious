@@ -20,4 +20,7 @@
 
     <!-- File Manager -->
     <string name="something_went_wrong">Oops, something went wrong. Try again</string>
+    <string name="memory_permission_disabled">File Manager feature requires storage access. Please,
+        grant it in the settings.</string>
+    <string name="grant_permission">Grant</string>
 </resources>

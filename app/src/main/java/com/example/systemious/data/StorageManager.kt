@@ -14,16 +14,15 @@ val IMAGE_EXTENSIONS = listOf("jpg", "png", "gif", "jpeg", "webp")
 
 fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
     path?.let {
-        val rootDir = if (name.isEmpty()) File(path) else File(path, name)
+        val rootDir = if (name.isEmpty()) File(path) else File("$path/$name")
         if (!rootDir.canRead() || rootDir.list().isEmpty()) return mutableListOf()
 
         val fileList = mutableListOf<FileItem>()
-        for (fileName in rootDir.list()) {
-            if (!fileName.startsWith(".")) {
+        for (file in rootDir.listFiles()) {
+            if (!file.startsWith(".")) {
                 val fileItem = FileItem()
-                val file = File("$path/$fileName")
 
-                fileItem.name = fileName
+                fileItem.name = file.name
                 fileItem.isDirectory = file.isDirectory
                 setFileItemFileSize(fileItem, file)
                 setBitmapIfImage(fileItem, file, IMAGE_EXTENSIONS)
