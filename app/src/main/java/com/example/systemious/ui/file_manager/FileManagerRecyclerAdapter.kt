@@ -60,6 +60,10 @@ class FileManagerRecyclerAdapter(private val context: Context, private val activ
             moreButton.setOnClickListener {
                 showOptionsDialog(holder)
             }
+            itemView.setOnLongClickListener {
+                showOptionsDialog(holder)
+                true
+            }
         }
     }
 
