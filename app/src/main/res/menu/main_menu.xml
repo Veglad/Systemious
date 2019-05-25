@@ -5,4 +5,9 @@
             android:title="@string/tracker_toggle"
             android:icon="@drawable/ic_stop_secondary_color_24dp"
             app:showAsAction="always"/>
+    <item
+            android:id="@+id/navClearStorage"
+            android:title="@string/clear_storage"
+            android:icon="@drawable/ic_clear_white"
+            app:showAsAction="always"/>
 </menu>

@@ -12,7 +12,10 @@ import com.example.systemious.R
 import kotlinx.android.synthetic.main.activity_system_state.*
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.core.content.ContextCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 class SystemStateActivity : AppCompatActivity() {
@@ -54,8 +57,30 @@ class SystemStateActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             R.id.navServiceStateToggle -> viewModel.toggleServiceState()
+            R.id.navClearStorage -> showClearStorageDialog()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showClearStorageDialog() {
+        val optionsBottomSheetDialog = BottomSheetDialog(this)
+        val sheetView = layoutInflater.inflate(R.layout.clear_storage_bottom_sheet, null)
+        optionsBottomSheetDialog.setContentView(sheetView)
+
+        val cancel = sheetView.findViewById<View>(R.id.clear_storage_cancel_item)
+        val delete = sheetView.findViewById<View>(R.id.clear_storage_delete_item)
+
+        cancel.setOnClickListener {
+            optionsBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+        delete.setOnClickListener {
+            optionsBottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            viewModel.clearStorage()
+        }
+
+        optionsBottomSheetDialog.show()
+
+        viewModel.clearStorage()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

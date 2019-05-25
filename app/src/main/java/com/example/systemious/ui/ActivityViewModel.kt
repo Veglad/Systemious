@@ -86,7 +86,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
         unBoundSystemService()
         stopSystemService()
         getApplication<App>().unregisterReceiver(systemInfoBroadcastReceiver)
-        Repository.clearResources()
+        Repository.forceSave()
         Log.d("FOREGROUND", "onCleared")
     }
 
@@ -107,10 +107,14 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
         if (_isSystemServiceWorking.value == true) {
             unBoundSystemService()
             stopSystemService()
-            Repository.clearResources()
+            Repository.forceSave()
         } else {
             startSystemService()
             bindToSystemService()
         }
+    }
+
+    fun clearStorage() {
+        Repository.clearStorage()
     }
 }

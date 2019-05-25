@@ -16,7 +16,11 @@ object Repository : ComponentsInfoStorageContract{
         ComponentsInfoStorage.saveCoresUsage(coresUsage)
     }
 
-    fun clearResources() {
+    override fun forceSave() {
         ComponentsInfoStorage.forceSave()
+    }
+
+    override fun clearStorage() {
+        ComponentsInfoStorage.clearStorage()
     }
 }

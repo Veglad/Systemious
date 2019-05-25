@@ -111,13 +111,23 @@ object ComponentsInfoStorage : ComponentsInfoStorageContract{
         }
     }
 
-    fun forceSave() {
+    override fun forceSave() {
         forceSaveRam()
         forceSaveCpuInfo()
+    }
+
+    override fun clearStorage() {
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransactionAsync { transactionRealm ->
+                transactionRealm.deleteAll()
+            }
+        }
     }
 }
 
 interface ComponentsInfoStorageContract {
     fun saveMemoryUsage(memoryUsage: Float)
     fun saveCoresUsage(coresUsage: MutableList<Float>)
+    fun forceSave()
+    fun clearStorage()
 }

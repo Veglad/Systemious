@@ -32,4 +32,6 @@
     <string name="size">Size:</string>
     <string name="modified">Modified:</string>
     <string name="ok">OK</string>
+    <string name="clear_storage">Clear storage</string>
+    <string name="do_you_want_to_clear_storage">Do you want to delete all tracked data from the storage?</string>
 </resources>
