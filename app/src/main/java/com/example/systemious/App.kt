@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.example.systemious.utils.Constants
+import io.realm.Realm
 import timber.log.Timber
 
 class App : Application() {
@@ -12,6 +13,11 @@ class App : Application() {
         super.onCreate()
         createSystemInfoNotificationChannel()
         initTimber()
+        realmInit()
+    }
+
+    private fun realmInit() {
+        Realm.init(this)
     }
 
     private fun initTimber() {
