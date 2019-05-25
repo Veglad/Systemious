@@ -1,9 +1,9 @@
 package com.example.systemious
 
 import com.example.systemious.data.IMAGE_EXTENSIONS
-import com.example.systemious.data.getBitmapFromFile
+import com.example.systemious.data.getFileFolderSize
 import com.example.systemious.data.loadFileItems
-import com.example.systemious.data.setBitmapIfImage
+import com.example.systemious.data.setUriIfImage
 import com.example.systemious.ui.file_manager.FileItem
 import io.mockk.*
 import org.junit.Test
@@ -24,29 +24,19 @@ class FileManagerTest {
         assertTrue(loadFileItems(null).size == 0)
     }
 
-    @Test
-    fun `verify if setBitMapIfImage gets bitmap for file with correct extension`() {
-        mockkStatic("com.example.systemious.data.StorageManagerKt")
-        every { getBitmapFromFile(any()) } returns null
-
-        val file: File = mockk()
-        every { file.name } returns CORRECT_IMAGE_EXTENSION_NAME
-
-        setBitmapIfImage(FileItem(), file, IMAGE_EXTENSIONS)
-
-        verify { getBitmapFromFile(any()) }
-    }
 
     @Test
-    fun `verify if setBitMapIfImage gets bitmap for file with incorrect extension`() {
+    fun `verify if uri is assigned null when file has incorrect image extension`() {
         mockkStatic("com.example.systemious.data.StorageManagerKt")
-        every { getBitmapFromFile(any()) } returns null
 
         val file: File = mockk()
         every { file.name } returns INCORRECT_IMAGE_EXTENSION_NAME
 
-        setBitmapIfImage(FileItem(), file, IMAGE_EXTENSIONS)
+        val fileItem = FileItem()
+        fileItem.iconUri = null
 
-        verify(exactly = 0) { getBitmapFromFile(any()) }
+        setUriIfImage(fileItem, file, IMAGE_EXTENSIONS)
+
+        assertNull(fileItem.iconUri)
     }
 }

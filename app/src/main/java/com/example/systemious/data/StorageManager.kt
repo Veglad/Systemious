@@ -24,7 +24,7 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
                 fileItem.name = file.name
                 fileItem.type = if(file.isDirectory) FileType.DIRECTORY else FileType.FILE
                 fileItem.absolutePath = file.absolutePath
-                setBitmapIfImage(fileItem, file, IMAGE_EXTENSIONS)
+                setUriIfImage(fileItem, file, IMAGE_EXTENSIONS)
 
                 fileList.add(fileItem)
             }
@@ -35,7 +35,7 @@ fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
     } ?: return mutableListOf()
 }
 
-fun setBitmapIfImage(fileItem: FileItem, file: File, imageExtensions: List<String>) {
+fun setUriIfImage(fileItem: FileItem, file: File, imageExtensions: List<String>) {
     for (extension in imageExtensions) {
         if (file.name.toLowerCase().endsWith(extension)) {
             fileItem.iconUri = Uri.fromFile(file)
