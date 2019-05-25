@@ -184,6 +184,8 @@ class CpuInfoCollector {
                 cpusUsageInPercent.add(percentUsage)
             }
 
+            cpusUsageInPercent.removeAt(0) //first element is total cpu info
+
             return cpusUsageInPercent.toDoubleArray()
         }
     }
