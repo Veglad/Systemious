@@ -34,4 +34,8 @@
     <string name="ok">OK</string>
     <string name="clear_storage">Clear storage</string>
     <string name="do_you_want_to_clear_storage">Do you want to delete all tracked data from the storage?</string>
+    <string name="csv_file_is_generated">CSV file is generated</string>
+    <string name="oops_something_went_wrong">Oops, something went wrong.</string>
+    <string name="file_has_been_generated">File has been generated!</string>
+    <string name="make_report">make report</string>
 </resources>

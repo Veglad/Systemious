@@ -1,5 +1,6 @@
 package com.example.systemious.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -13,7 +14,10 @@ import kotlinx.android.synthetic.main.activity_system_state.*
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.example.systemious.data.getOpenFileIntent
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
@@ -23,14 +27,67 @@ class SystemStateActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var viewModel: ActivityViewModel
 
+    private lateinit var reportBottomDialog: BottomSheetDialog
+
+    private lateinit var reportProgressBar: ProgressBar
+    private lateinit var reportProgressTextView: TextView
+    private lateinit var reportErrorTextView: TextView
+    private lateinit var reportPathTextView: TextView
+    private lateinit var reportSuccessTextView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_system_state)
 
         viewModel = ViewModelProviders.of(this).get(ActivityViewModel::class.java)
+        initViewModelObservers()
 
         setSupportActionBar(mainToolbar)
         initNavigation()
+    }
+
+    private fun initViewModelObservers() {
+        viewModel.isLoading.observe(this, Observer { isLoading ->
+            setShowIsLoading(isLoading)
+        })
+        viewModel.error.observe(this, Observer { ex ->
+            showError()
+        })
+        viewModel.reportCsvFile.observe(this, Observer { file ->
+            setShowIsLoading(false)
+            if (file == null) {
+                showError()
+            } else {
+                reportSuccessTextView.visibility = View.VISIBLE
+                reportPathTextView.visibility = View.VISIBLE
+                reportErrorTextView.visibility = View.GONE
+
+                reportPathTextView.text = "Path: ${file.absoluteFile}"
+                reportPathTextView.setOnClickListener {
+                    startActivity(Intent(getOpenFileIntent(file, this)))
+                }
+            }
+        })
+    }
+
+    private fun showError() {
+        setShowIsLoading(false)
+        reportErrorTextView.visibility = View.VISIBLE
+    }
+
+    private fun setShowIsLoading(isLoading: Boolean) {
+        if (isLoading) {
+            reportProgressBar.visibility = View.VISIBLE
+            reportProgressTextView.visibility = View.VISIBLE
+
+            reportErrorTextView.visibility = View.GONE
+
+            reportSuccessTextView.visibility = View.GONE
+            reportPathTextView.visibility = View.VISIBLE
+        } else {
+            reportProgressBar.visibility = View.GONE
+            reportProgressTextView.visibility = View.GONE
+        }
     }
 
     private fun initNavigation() {
@@ -39,7 +96,7 @@ class SystemStateActivity : AppCompatActivity() {
         NavigationUI.setupActionBarWithNavController(this, navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            when(destination.id) {
+            when (destination.id) {
                 R.id.navigationSystemState -> {
                     supportActionBar?.title = getString(R.string.system_state)
                 }
@@ -58,6 +115,7 @@ class SystemStateActivity : AppCompatActivity() {
         when (item?.itemId) {
             R.id.navServiceStateToggle -> viewModel.toggleServiceState()
             R.id.navClearStorage -> showClearStorageDialog()
+            R.id.navMakeReport -> showReportDialog()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -79,15 +137,29 @@ class SystemStateActivity : AppCompatActivity() {
         }
 
         optionsBottomSheetDialog.show()
+    }
 
-        viewModel.clearStorage()
+    private fun showReportDialog() {
+        reportBottomDialog = BottomSheetDialog(this)
+        val sheetView = layoutInflater.inflate(R.layout.report_bottom_sheet, null)
+
+        reportProgressBar = sheetView.findViewById(R.id.reportProgressBar)
+        reportProgressTextView = sheetView.findViewById(R.id.reportProgressTextView)
+        reportErrorTextView = sheetView.findViewById(R.id.reportErrorTextView)
+        reportPathTextView = sheetView.findViewById(R.id.reportPathTextView)
+        reportSuccessTextView = sheetView.findViewById(R.id.reportSuccessTextView)
+
+        reportBottomDialog.setContentView(sheetView)
+        reportBottomDialog.show()
+        viewModel.makeReport()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
 
         viewModel.isSystemServiceWorking.observe(this, Observer<Boolean> { isInfoServiceWorking ->
-            val iconId = if (isInfoServiceWorking) R.drawable.ic_stop_secondary_color_24dp else R.drawable.ic_resume_secondary_24dp
+            val iconId =
+                if (isInfoServiceWorking) R.drawable.ic_stop_secondary_color_24dp else R.drawable.ic_resume_secondary_24dp
             menu.getItem(0)?.icon = ContextCompat.getDrawable(this, iconId)
         })
 

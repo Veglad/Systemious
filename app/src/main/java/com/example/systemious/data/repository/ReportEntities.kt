@@ -12,22 +12,52 @@ open class CpuCoresUsageInterval(
     var coresUsages: RealmList<CoreUsages> = RealmList(),
     var startIntervalDateInMs: Long = 0,
     var timeCheckingIntervalInMs: Int = 1000
-) : RealmObject()
+) : RealmObject() {
+    companion object {
+        fun copyOf(cpuCoresUsageInterval: CpuCoresUsageInterval) : CpuCoresUsageInterval {
+
+            val cpuUsages: RealmList<CoreUsages> = RealmList()
+            for (usage in cpuCoresUsageInterval.coresUsages) {
+                cpuUsages.add(CoreUsages.copyOf(usage))
+            }
+
+            return CpuCoresUsageInterval(
+
+                cpuCoresUsageInterval.id,
+                cpuUsages,
+                cpuCoresUsageInterval.startIntervalDateInMs,
+                cpuCoresUsageInterval.timeCheckingIntervalInMs
+            )
+        }
+    }
+}
 
 open class CoreUsages(
     @PrimaryKey
     var id: String = UUID.randomUUID().toString(),
-    var usages: RealmList<Usage> = RealmList()
-) : RealmObject()
+    var usages: RealmList<Float> = RealmList()
+) : RealmObject() {
+    companion object {
+        fun copyOf(coreUsages: CoreUsages): CoreUsages {
+
+            val usages = RealmList<Float>()
+
+            for (usage in coreUsages.usages) {
+                usages.add(usage)
+            }
+
+            return CoreUsages(
+                coreUsages.id,
+                usages
+            )
+        }
+    }
+}
 
 open class RamUsageInterval(
     @PrimaryKey
     var id: String = UUID.randomUUID().toString(),
-    var ramUsages: RealmList<Usage> = RealmList(),
+    var ramUsages: RealmList<Float> = RealmList(),
     var startIntervalDateInMs: Long = 0,
     var timeCheckingIntervalInMs: Int = 1000
-) : RealmObject()
-
-open class Usage(
-    var usage: Float = 0f
 ) : RealmObject()

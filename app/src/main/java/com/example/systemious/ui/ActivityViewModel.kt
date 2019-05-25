@@ -10,25 +10,41 @@ import com.example.systemious.data.SystemInfoService.LocalBinder
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import android.content.IntentFilter
+import androidx.lifecycle.LiveData
 import com.example.systemious.data.SystemInfoService
 import com.example.systemious.data.repository.Repository
 import com.example.systemious.utils.Constants
+import kotlinx.coroutines.*
+import java.io.File
+import java.lang.Exception
 
 
 class ActivityViewModel(application: Application) : AndroidViewModel(application) {
     private var isBound = false
-    set(value) {
-        field = value
-        if (!value) {
-            _isSystemServiceWorking.value = false
+        set(value) {
+            field = value
+            if (!value) {
+                _isSystemServiceWorking.value = false
+            }
         }
-    }
-    private lateinit var systemService: SystemInfoService
 
+    private val job: Job = Job()
+    private val uiCoroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main + job)
+
+    private lateinit var systemService: SystemInfoService
     private var _isSystemServiceWorking = MutableLiveData<Boolean>().apply { value = false }
 
     val isSystemServiceWorking: MutableLiveData<Boolean>
-    get() = _isSystemServiceWorking
+        get() = _isSystemServiceWorking
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _error = MutableLiveData<Exception>()
+    val error: LiveData<Exception> = _error
+
+    private var _reportCsvFile = MutableLiveData<File?>()
+    val reportCsvFile: MutableLiveData<File?> = _reportCsvFile
 
     private val systemServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, binder: IBinder) {
@@ -72,7 +88,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun systemInfoMessageReceived(intent: Intent?) {
-        intent?.extras?.let {bundle ->
+        intent?.extras?.let { bundle ->
             val workingCode: Int = bundle.getInt(Constants.SYSTEM_INFO_BROADCAST_RECEIVER_WORKING_CODE_KEY)
             when (workingCode) {
                 Constants.SYSTEM_INFO_BROADCAST_RECEIVER_START_CODE -> _isSystemServiceWorking.value = true
@@ -116,5 +132,20 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
 
     fun clearStorage() {
         Repository.clearStorage()
+    }
+
+    fun makeReport() {
+        uiCoroutineScope.launch {
+            _isLoading.value = true
+            try {
+                _reportCsvFile.value = withContext(Dispatchers.IO) {
+                    Repository.makeReport(getApplication())
+                }
+            } catch (ex: Exception) {
+                _error.value = ex
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 }

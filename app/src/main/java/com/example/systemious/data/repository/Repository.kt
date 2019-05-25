@@ -1,5 +1,9 @@
 package com.example.systemious.data.repository
 
+import android.content.Context
+import android.net.Uri
+import java.io.File
+
 object Repository : ComponentsInfoStorageContract{
 
     const val TIME_CHECKING_INTERVAL = 1000
@@ -23,4 +27,6 @@ object Repository : ComponentsInfoStorageContract{
     override fun clearStorage() {
         ComponentsInfoStorage.clearStorage()
     }
+
+    fun makeReport(context: Context): File? = ComponentsInfoStorage.makeReport(context)
 }

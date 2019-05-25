@@ -8,18 +8,17 @@
         android:layout_height="match_parent"
         tools:context=".ui.SystemStateActivity">
 
-    <com.google.android.material.appbar.AppBarLayout  android:id="@+id/mainAppBar"
-                                                      android:layout_width="match_parent"
-                                                      android:layout_height="wrap_content"
-                                                      app:layout_constraintTop_toTopOf="parent"
-                                                      app:layout_constraintStart_toStartOf="parent"
-                                                      android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+    <com.google.android.material.appbar.AppBarLayout android:id="@+id/mainAppBar"
+                                                     android:layout_width="match_parent"
+                                                     android:layout_height="wrap_content"
+                                                     app:layout_constraintTop_toTopOf="parent"
+                                                     app:layout_constraintStart_toStartOf="parent"
+                                                     android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
         <androidx.appcompat.widget.Toolbar
                 android:id="@+id/mainToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"/>
     </com.google.android.material.appbar.AppBarLayout>
-
 
 
     <fragment

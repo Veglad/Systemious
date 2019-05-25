@@ -1,10 +1,17 @@
 package com.example.systemious.data.repository
 
+import android.content.Context
+import android.net.Uri
+import com.example.systemious.data.createReportFile
 import io.realm.Realm
 import io.realm.RealmList
+import io.realm.RealmResults
+import java.io.File
+import java.io.FileWriter
+import java.text.SimpleDateFormat
 import java.util.*
 
-object ComponentsInfoStorage : ComponentsInfoStorageContract{
+object ComponentsInfoStorage : ComponentsInfoStorageContract {
 
     private const val MAX_INTERVAL_ITEMS_SIZE = 100
     private var timeCheckingIntervalInMs = 1000
@@ -50,10 +57,15 @@ object ComponentsInfoStorage : ComponentsInfoStorageContract{
         }
     }
 
-    private fun saveCoreUsagesToStorage(coresUsages: MutableList<MutableList<Float>>, timeCheckingIntervalInMs: Int, startIntervalDateInMs: Long) {
+    private fun saveCoreUsagesToStorage(
+        coresUsages: MutableList<MutableList<Float>>,
+        timeCheckingIntervalInMs: Int,
+        startIntervalDateInMs: Long
+    ) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransactionAsync { transactionRealm ->
-                val cpuCoresUsageInterval = transactionRealm.createObject(CpuCoresUsageInterval::class.java, UUID.randomUUID().toString())
+                val cpuCoresUsageInterval =
+                    transactionRealm.createObject(CpuCoresUsageInterval::class.java, UUID.randomUUID().toString())
                 cpuCoresUsageInterval.startIntervalDateInMs = startIntervalDateInMs
                 cpuCoresUsageInterval.timeCheckingIntervalInMs = timeCheckingIntervalInMs
 
@@ -63,9 +75,9 @@ object ComponentsInfoStorage : ComponentsInfoStorageContract{
                     val coreUsages = transactionRealm.createObject(CoreUsages::class.java, UUID.randomUUID().toString())
 
                     for (usage in coresUsages[i]) {
-                        val managedUsage = transactionRealm.createObject(Usage::class.java)
-                        managedUsage.usage = usage
-                        coreUsages.usages.add(managedUsage)
+                        //val managedUsage = transactionRealm.copyFromRealm(Usage::class.java)
+                        //managedUsage.usage = usage
+                        coreUsages.usages.add(usage)
                     }
                     coreUsagesList.add(coreUsages)
                 }
@@ -93,17 +105,22 @@ object ComponentsInfoStorage : ComponentsInfoStorageContract{
         memoryUsages = mutableListOf()
     }
 
-    private fun saveMemoryUsagesToStorage(memoryUsages: MutableList<Float>, timeCheckingIntervalInMs: Int, startIntervalDateInMs: Long) {
+    private fun saveMemoryUsagesToStorage(
+        memoryUsages: MutableList<Float>,
+        timeCheckingIntervalInMs: Int,
+        startIntervalDateInMs: Long
+    ) {
         Realm.getDefaultInstance().use { realm ->
             realm.executeTransactionAsync { transactionRealm ->
-                val memoryUsage = transactionRealm.createObject(RamUsageInterval::class.java, UUID.randomUUID().toString())
+                val memoryUsage =
+                    transactionRealm.createObject(RamUsageInterval::class.java, UUID.randomUUID().toString())
                 memoryUsage.startIntervalDateInMs = startIntervalDateInMs
                 memoryUsage.timeCheckingIntervalInMs = timeCheckingIntervalInMs
 
                 for (usage in memoryUsages) {
-                    val managedUsage = transactionRealm.createObject(Usage::class.java)
-                    managedUsage.usage = usage
-                    memoryUsage.ramUsages.add(managedUsage)
+                    //val managedUsage = transactionRealm.createObject(Usage::class.java)
+                    //managedUsage.usage = usage
+                    memoryUsage.ramUsages.add(usage)
                 }
 
                 transactionRealm.insertOrUpdate(memoryUsage)
@@ -121,6 +138,66 @@ object ComponentsInfoStorage : ComponentsInfoStorageContract{
             realm.executeTransactionAsync { transactionRealm ->
                 transactionRealm.deleteAll()
             }
+        }
+    }
+
+    fun makeReport(context: Context): File? {
+        var fileResult: File? = null
+        Realm.getDefaultInstance().use { realm ->
+            realm.executeTransaction { transactionRealm ->
+                val file = createReportFile(context)
+                val cpuCoresUsageIntervals = transactionRealm.where(CpuCoresUsageInterval::class.java).findAll()
+                //Needs mapping for Realm results
+                for (interval in cpuCoresUsageIntervals) {
+                    writeCpuCoresUsagesIntervalsToFile(CpuCoresUsageInterval.copyOf(interval), file)
+                }
+
+                val ramUsageIntervals = transactionRealm.where(RamUsageInterval::class.java).findAll()
+                writeRamUsagesIntervalsToFile(ramUsageIntervals, file)
+                fileResult = file
+            }
+        }
+        return fileResult
+    }
+
+    private fun writeCpuCoresUsagesIntervalsToFile(
+        cpuInterval: CpuCoresUsageInterval,
+        file: File
+    ) {
+        val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss Z")
+        FileWriter(file, true).use { fileWriter ->
+            fileWriter.write("CPU Cores intervals\n")
+            val dateString = dateFormat.format(cpuInterval.startIntervalDateInMs)
+            fileWriter.write("$dateString, tracking period - ${cpuInterval.timeCheckingIntervalInMs}ms\nCPU usage %\n")
+
+            for (i in 0 until cpuInterval.coresUsages.size) {
+                fileWriter.write("core $i\n")
+                //Write usages (percentage)
+                cpuInterval.coresUsages[i]?.let { core ->
+                    for (j in 0 until core.usages.size) {
+                        val coreUsage = core.usages[j]//?.usage
+                        fileWriter.write("$coreUsage\n")
+                    }
+                }
+            }
+            fileWriter.write("----------------------------------\n")
+        }
+    }
+
+    private fun writeRamUsagesIntervalsToFile(ramUsageIntervals: RealmResults<RamUsageInterval>?, file: File) {
+        val dateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss Z")
+        if (ramUsageIntervals == null) return
+        FileWriter(file, true).use { fileWriter ->
+            fileWriter.write("RAM intervals\n")
+            for (interval in ramUsageIntervals) {
+                val dateString = dateFormat.format(interval.startIntervalDateInMs)
+                fileWriter.write("$dateString, tracking period - ${interval.timeCheckingIntervalInMs}ms\nRAM usage %\n")
+
+                for (i in 0 until interval.ramUsages.size) {
+                    fileWriter.write("${interval.ramUsages[i]/*?.usage*/}\n")
+                }
+            }
+            fileWriter.write("----------------------------------\n")
         }
     }
 }

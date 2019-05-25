@@ -7,6 +7,11 @@ import java.io.File
 import android.content.Intent
 import android.net.Uri
 import com.example.systemious.ui.file_manager.FileType
+import android.os.Environment
+import com.example.systemious.App
+import com.example.systemious.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 val IMAGE_EXTENSIONS = listOf("jpg", "png", "gif", "jpeg", "webp")
@@ -87,10 +92,9 @@ fun getFileFolderSize(dir: File): Long {
     return size
 }
 
-fun getOpenFileIntent(path: String, fileName: String, context: Context): Intent? {
-    val file = File("$path/$fileName")
+fun getOpenFileIntent(file: File, context: Context): Intent? {
     if (!file.exists()) return null
-    val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", File("$path/$fileName"))
+    val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
     val mime = context.contentResolver.getType(uri)
 
     val intent = Intent()
@@ -98,4 +102,14 @@ fun getOpenFileIntent(path: String, fileName: String, context: Context): Intent?
     intent.setDataAndType(uri, mime)
     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     return if (intent.resolveActivity(context.packageManager)!= null) intent else null
+}
+
+fun getAppDir(context: Context): File {
+    return context.filesDir
+}
+
+fun createReportFile(context: Context): File {
+    val dateFormat = SimpleDateFormat("ddMMYYYY_HHmmss")
+    val fileName = dateFormat.format(Date()) + ".txt"
+    return File(getAppDir(context).absoluteFile, fileName)
 }
