@@ -6,10 +6,12 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.systemious.App
 import android.util.Log
 import android.content.Context.BIND_AUTO_CREATE
-import com.example.systemious.ui.SystemInfoService.LocalBinder
+import com.example.systemious.data.SystemInfoService.LocalBinder
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import android.content.IntentFilter
+import com.example.systemious.data.SystemInfoService
+import com.example.systemious.data.repository.Repository
 import com.example.systemious.utils.Constants
 
 
@@ -24,6 +26,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
     private lateinit var systemService: SystemInfoService
 
     private var _isSystemServiceWorking = MutableLiveData<Boolean>().apply { value = false }
+
     val isSystemServiceWorking: MutableLiveData<Boolean>
     get() = _isSystemServiceWorking
 
@@ -83,6 +86,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
         unBoundSystemService()
         stopSystemService()
         getApplication<App>().unregisterReceiver(systemInfoBroadcastReceiver)
+        Repository.clearResources()
         Log.d("FOREGROUND", "onCleared")
     }
 
@@ -103,6 +107,7 @@ class ActivityViewModel(application: Application) : AndroidViewModel(application
         if (_isSystemServiceWorking.value == true) {
             unBoundSystemService()
             stopSystemService()
+            Repository.clearResources()
         } else {
             startSystemService()
             bindToSystemService()
