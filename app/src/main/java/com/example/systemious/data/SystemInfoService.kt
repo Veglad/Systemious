@@ -1,4 +1,4 @@
-package com.example.systemious.ui
+package com.example.systemious.data
 
 import android.content.Intent
 import android.os.Binder
@@ -12,10 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.example.systemious.R
 import com.example.systemious.utils.Constants
 import android.os.Handler
-import android.app.ActivityManager
-import com.example.systemious.data.SystemInfoManager
-import com.example.systemious.domain.RamInfo
-import com.example.systemious.utils.getTextAndClose
+import com.example.systemious.ui.SystemStateActivity
 
 
 class SystemInfoService : Service() {
@@ -129,10 +126,7 @@ class SystemInfoService : Service() {
         trackingHandler.post(runnableCode)
     }
 
-    //TODO: Add cpu frequency and network
     private fun getIntentWithTrackedData(): Intent? {
-
-
         val currentCoresFrequencies = SystemInfoManager.getCpuUsageSnapshot()
         val ramInfo = SystemInfoManager.getRamUsedValue(this)
 

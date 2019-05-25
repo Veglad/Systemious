@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ui.SystemInfoService"/>
+        <service android:name=".data.SystemInfoService"/>
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="com.example.systemious.fileprovider"
