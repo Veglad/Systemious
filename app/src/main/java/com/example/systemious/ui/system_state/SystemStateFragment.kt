@@ -45,11 +45,11 @@ class SystemStateFragment : Fragment() {
                 isRecyclerInit = true
                 initCpuRecyclerView()
             }
-            initViewModels()
+            initViewModelObservers()
         })
     }
 
-    private fun initViewModels() {
+    private fun initViewModelObservers() {
         viewModel.ramUsed.observe(this, Observer<Queue<Double>> { usedRamValueQueue ->
             systemInfoListAdapter?.updateMemoryChart(usedRamValueQueue)
         })

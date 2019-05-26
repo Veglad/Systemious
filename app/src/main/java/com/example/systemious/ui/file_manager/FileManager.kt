@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.systemious.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.file_manager_fragment.*
-import android.content.DialogInterface
-import androidx.appcompat.app.AlertDialog
 
 
 class FileManager : Fragment() {
@@ -47,7 +45,7 @@ class FileManager : Fragment() {
         viewModel = ViewModelProviders.of(this).get(FileManagerViewModel::class.java)
         fileManagerSwipeRefresh.setOnRefreshListener { loadFiles() }
         initRecyclerView()
-        initViewModels()
+        initViewModelObservers()
     }
 
     private fun loadFiles() {
@@ -152,7 +150,7 @@ class FileManager : Fragment() {
         }
     }
 
-    private fun initViewModels() {
+    private fun initViewModelObservers() {
         viewModel.isLoading.observe(this, Observer { isLoading ->
             fileManagerSwipeRefresh.isRefreshing = isLoading
         })

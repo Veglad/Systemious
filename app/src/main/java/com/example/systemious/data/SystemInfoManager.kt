@@ -28,16 +28,6 @@ class SystemInfoManager {
     companion object {
         val coresNumber = CpuInfoCollector.calcCpuCoreNumber()
 
-        val maxCoresFrequencies by lazy {
-            CpuInfoCollector.takeMaxCoresFrequencies()
-        }
-
-        val minCoresFrequencies by lazy {
-            CpuInfoCollector.takeMinCoresFrequencies()
-        }
-
-        val currentCoresFrequencies = CpuInfoCollector.takeCurrentCoresFrequencies()
-
         // Params for System Details
         val deviceName = Build.MANUFACTURER
 

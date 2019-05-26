@@ -51,23 +51,6 @@ class CpuInfoCollector {
             return sLastCpuCoreCount
         }
 
-        /**
-         * Get current CPU clock
-         *
-         * @return A number such as 384000 (0 for acquisition errors)
-         */
-        private fun takeCurrentCpuFreq(coreIndex: Int): Int {
-            return readIntegerFile("/sys/devices/system/cpu/cpu$coreIndex/cpufreq/scaling_cur_freq")
-        }
-
-        /**
-         * Get minimum CPU clock
-         *
-         * @return A number such as 384000 (0 for acquisition errors)
-         */
-        private fun takeMinCpuFreq(coreIndex: Int): Int {
-            return readIntegerFile("/sys/devices/system/cpu/cpu$coreIndex/cpufreq/cpuinfo_min_freq")
-        }
 
         /**
          * Get maximum CPU clock
@@ -78,18 +61,6 @@ class CpuInfoCollector {
             return readIntegerFile("/sys/devices/system/cpu/cpu$coreIndex/cpufreq/cpuinfo_max_freq")
         }
 
-        fun takeAllCoresFrequencies() : AllCoresFrequencies {
-            val cpuCoresNumber = calcCpuCoreNumber()
-            val allCoresFrequencies = AllCoresFrequencies()
-
-            for (i in 0 until cpuCoresNumber) {
-                allCoresFrequencies.frequencies[i] = takeCurrentCpuFreq(i)
-                allCoresFrequencies.maxFrequencies[i] = takeMaxCpuFreq(i)
-                allCoresFrequencies.minFrequencies[i] = takeMinCpuFreq(i)
-            }
-
-            return allCoresFrequencies
-        }
 
         fun takeMaxCoresFrequencies() : IntArray {
             val cpuCoresNumber = calcCpuCoreNumber()
@@ -100,29 +71,6 @@ class CpuInfoCollector {
             }
 
             return maxCoresFrequencies
-        }
-
-        fun takeMinCoresFrequencies() : IntArray {
-            val cpuCoresNumber = calcCpuCoreNumber()
-            val minCoresFrequencies = IntArray(cpuCoresNumber)
-
-            for (i in 0 until cpuCoresNumber) {
-                minCoresFrequencies[i] = takeMinCpuFreq(i)
-            }
-
-            return minCoresFrequencies
-        }
-
-        fun takeCurrentCoresFrequencies() : IntArray {
-            val cpuCoresNumber = calcCpuCoreNumber()
-            val currentCoresFrequencies = IntArray(cpuCoresNumber)
-
-
-            for (i in 0 until cpuCoresNumber) {
-                currentCoresFrequencies[i] = takeCurrentCpuFreq(i)
-            }
-
-            return currentCoresFrequencies
         }
 
         private fun readIntegerFile(filePath: String): Int {

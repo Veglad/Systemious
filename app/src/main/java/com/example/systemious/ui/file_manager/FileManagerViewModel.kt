@@ -1,14 +1,14 @@
 package com.example.systemious.ui.file_manager
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.os.Environment
+import androidx.core.content.FileProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.systemious.data.deleteFile
-import com.example.systemious.data.getOpenFileIntent
-import com.example.systemious.data.loadFileItems
+import com.example.systemious.data.repository.Repository
 import com.example.systemious.ui.Event
 import com.example.systemious.ui.EventWithContent
 import kotlinx.coroutines.*
@@ -59,7 +59,7 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
         uiCoroutineScope.launch {
             _isLoading.value = true
             try {
-                val files = withContext(Dispatchers.IO) { loadFileItems(_currentPath.value) }
+                val files = withContext(Dispatchers.IO) { Repository.loadFileItems(_currentPath.value) }
                 if (_currentPath.value != rootDirectory) {
                     files.add(0, FileItem(name = "..", type = FileType.PARENT_FOLDER))
                 }
@@ -83,7 +83,7 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
                 loadFiles()
             }
             else -> _currentPath.value?.let { path ->
-                val intent = getOpenFileIntent(File("$path/${fileItem.name}"), getApplication())
+                val intent = Repository.getOpenFileIntent(File("$path/${fileItem.name}"), getApplication())
                 intent?.let {
                     _openFileIntent.value = EventWithContent(intent)
                 }
@@ -99,7 +99,7 @@ class FileManagerViewModel(application: Application) : AndroidViewModel(applicat
     fun deleteItem(fileItem: FileItem) {
         _currentPath.value?.let { path ->
             try {
-                deleteFile(path, fileItem)
+                Repository.deleteFile(path, fileItem)
                 _deletedFile.value = EventWithContent(fileItem)
             } catch (ex: Exception) {
                 Timber.e("Delete file error: ${ex.message}")

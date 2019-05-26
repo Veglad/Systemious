@@ -17,12 +17,12 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.example.systemious.data.getOpenFileIntent
+import com.example.systemious.data.repository.Repository
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
-class SystemStateActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private lateinit var viewModel: ActivityViewModel
@@ -51,12 +51,12 @@ class SystemStateActivity : AppCompatActivity() {
             setShowIsLoading(isLoading)
         })
         viewModel.error.observe(this, Observer { ex ->
-            showError()
+            showReportError()
         })
         viewModel.reportCsvFile.observe(this, Observer { file ->
             setShowIsLoading(false)
             if (file == null) {
-                showError()
+                showReportError()
             } else {
                 reportSuccessTextView.visibility = View.VISIBLE
                 reportPathTextView.visibility = View.VISIBLE
@@ -64,13 +64,13 @@ class SystemStateActivity : AppCompatActivity() {
 
                 reportPathTextView.text = "Path: ${file.absoluteFile}"
                 reportPathTextView.setOnClickListener {
-                    startActivity(Intent(getOpenFileIntent(file, this)))
+                    startActivity(Intent(Repository.getOpenFileIntent(file, this)))
                 }
             }
         })
     }
 
-    private fun showError() {
+    private fun showReportError() {
         setShowIsLoading(false)
         reportErrorTextView.visibility = View.VISIBLE
     }

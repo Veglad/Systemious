@@ -1,7 +1,8 @@
 package com.example.systemious.data.repository
 
 import android.content.Context
-import android.net.Uri
+import android.content.Intent
+import com.example.systemious.ui.file_manager.FileItem
 import java.io.File
 
 object Repository : ComponentsInfoStorageContract{
@@ -29,4 +30,15 @@ object Repository : ComponentsInfoStorageContract{
     }
 
     fun makeReport(context: Context): File? = ComponentsInfoStorage.makeReport(context)
+    fun loadFileItems(path: String?, name: String = ""): MutableList<FileItem> {
+        return com.example.systemious.data.loadFileItems(path, name)
+    }
+
+    fun deleteFile(path: String, fileItem: FileItem) {
+        return com.example.systemious.data.deleteFile(path, fileItem)
+    }
+
+    fun getOpenFileIntent(file: File, context: Context): Intent? {
+        return com.example.systemious.data.getOpenFileIntent(file, context)
+    }
 }

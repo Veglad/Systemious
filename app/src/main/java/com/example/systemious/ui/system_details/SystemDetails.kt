@@ -32,11 +32,11 @@ class SystemDetails : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(SystemDetailsViewModel::class.java)
         systemDetailsSwipeRefresh.setOnRefreshListener { viewModel.loadSystemDetails() }
-        initViewModels()
+        initViewModelObservers()
         initRecyclerView()
     }
 
-    private fun initViewModels() {
+    private fun initViewModelObservers() {
         viewModel.isLoading.observe(this, Observer { isLoading ->
             systemDetailsSwipeRefresh.isRefreshing = isLoading
         })

@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.example.systemious.R
 import com.example.systemious.utils.Constants
 import android.os.Handler
-import com.example.systemious.ui.SystemStateActivity
+import com.example.systemious.ui.MainActivity
 
 
 class SystemInfoService : Service() {
@@ -36,13 +36,6 @@ class SystemInfoService : Service() {
     private val trackingHandler = Handler()
     var infoUpdateFrequencyMs = 1000L
     private set
-
-    var cpuCoresNumber = SystemInfoManager.coresNumber
-    private set
-    var cpuMaxFrequencies = SystemInfoManager.maxCoresFrequencies
-        private set
-    var cpuMinFrequencies = SystemInfoManager.minCoresFrequencies
-        private set
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
@@ -82,9 +75,7 @@ class SystemInfoService : Service() {
     }
 
     private fun startForegroundService() {
-
-
-        val notificationIntent = Intent(application, SystemStateActivity::class.java)
+        val notificationIntent = Intent(application, MainActivity::class.java)
         notificationIntent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
 

@@ -57,7 +57,19 @@ fun deleteFile(path: String, fileItem: FileItem) {
     }
 }
 
-fun getFolderSizeParams(file: File) : Pair<Double, String>{
+fun getOpenFileIntent(file: File, context: Context): Intent? {
+    if (!file.exists()) return null
+    val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
+    val mime = context.contentResolver.getType(uri)
+
+    val intent = Intent()
+    intent.action = Intent.ACTION_VIEW
+    intent.setDataAndType(uri, mime)
+    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    return if (intent.resolveActivity(context.packageManager)!= null) intent else null
+}
+
+fun getFolderSizeParams(file: File) : Pair<Double, String> {
     var size = getFileFolderSize(file).toDouble()
     var sizeSuffix = "B"
 
@@ -90,18 +102,6 @@ fun getFileFolderSize(dir: File): Long {
         size += dir.length()
     }
     return size
-}
-
-fun getOpenFileIntent(file: File, context: Context): Intent? {
-    if (!file.exists()) return null
-    val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
-    val mime = context.contentResolver.getType(uri)
-
-    val intent = Intent()
-    intent.action = Intent.ACTION_VIEW
-    intent.setDataAndType(uri, mime)
-    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    return if (intent.resolveActivity(context.packageManager)!= null) intent else null
 }
 
 fun getAppDir(context: Context): File {

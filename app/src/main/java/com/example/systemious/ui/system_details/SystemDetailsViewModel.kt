@@ -75,4 +75,9 @@ class SystemDetailsViewModel(application: Application) : AndroidViewModel(applic
         val normalizedNumber = capacity/ 1073741824 //1024 * 1024 * 1024
         return DecimalFormat("#.#").format(normalizedNumber) + " Gb"
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        job.cancel()
+    }
 }
