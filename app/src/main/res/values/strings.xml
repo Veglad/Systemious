@@ -38,4 +38,5 @@
     <string name="oops_something_went_wrong">Oops, something went wrong.</string>
     <string name="file_has_been_generated">File has been generated!</string>
     <string name="make_report">make report</string>
+    <string name="cancel">cancel</string>
 </resources>
